@@ -1,0 +1,45 @@
+{
+  "name": "your-project-name-umbrella",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "npm run backend:start",
+    "dev": "concurrently \"npm run frontend:dev\" \"npm run backend:dev\"",
+    "setup": "npm install && npm run backend:setup && npm run frontend:setup",
+    "build": "npm run frontend:build",
+    "generate-support-files": "npm run backend:generate-support-files && npm run frontend:generate-support-files",
+    "check": "npm run backend:check && npm run frontend:check",
+    "test": "npm run backend:test; npm run frontend:test",
+    "test:e2e": "playwright test",
+    "backend:start": "cd backend && .venv/bin/python -m your_project_name.app",
+    "backend:generate-support-files": "cd backend && .venv/bin/python scripts/generate_support_files.py",
+    "backend:dev": "cd backend && ENVIRONMENT=development .venv/bin/python -m your_project_name.app",
+    "backend:setup": "cd backend && PYTHON=python3; command -v python3.11 >/dev/null 2>&1 && PYTHON=python3.11; $PYTHON -m venv .venv && .venv/bin/python -m pip install --upgrade pip && .venv/bin/python -m pip install -e \".[dev]\"",
+    "backend:check": "npm run backend:lint && npm run backend:format:check && npm run backend:typecheck",
+    "backend:lint": "cd backend && .venv/bin/python -m ruff check .",
+    "backend:format": "cd backend && .venv/bin/python -m ruff format .",
+    "backend:format:check": "cd backend && .venv/bin/python -m ruff format --check .",
+    "backend:typecheck": "cd backend && .venv/bin/python -m ty check",
+    "backend:test": "cd backend && .venv/bin/python -m pytest --cov-report=html --cov=your_project_name tests/",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:generate-support-files": "cd frontend && npm run generate-support-files",
+    "frontend:setup": "cd frontend && npm install",
+    "frontend:check": "npm run frontend:lint && npm run frontend:typecheck",
+    "frontend:lint": "cd frontend && npm run lint",
+    "frontend:format": "cd frontend && npm run format",
+    "frontend:typecheck": "cd frontend && npm run type-check",
+    "frontend:test": "cd frontend && npm run test:unit -- --run",
+    "frontend:preview": "cd frontend && npm run preview"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^26.0.0",
+    "dotenv": "^17.4.2",
+    "concurrently": "^10.0.3"
+  }
+}

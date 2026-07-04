@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv/
+
+# nox
+.nox/
+
+# pytest
+.pytest_cache/
+.cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# ruff
+.ruff_cache/
+
+# Local experiment outputs
+experiments/*/*/runs/
+
+# Generated frontend build served by FastAPI
+backend/spa/
+
+# Local SQLite databases
+backend/data/
+*.db
+*.db-shm
+*.db-wal
+
+# mypy / type checkers
+.mypy_cache/
+.dmypy.json
+.pytype/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# node
+node_modules/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Environment
+.env
+.env.local
+
+# Auto-generated type declarations (Nuxt UI)
+frontend/auto-imports.d.ts
+frontend/components.d.ts
+node_modules/.nuxt-ui/
+
+uv.lock

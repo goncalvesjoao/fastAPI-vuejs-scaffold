@@ -1,0 +1,45 @@
+name: CI checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    name: CI Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: npm run setup
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run checks
+        run: npm run check
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+        env:
+          CI: true
