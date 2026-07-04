@@ -45,9 +45,7 @@ def _validate_catalog(catalog: Catalog, catalog_path: Path) -> None:
                 for nested_key, nested_value in value.items()
             )
         elif not isinstance(value, str):
-            raise ValueError(
-                f"Translation {key!r} in {catalog_path} must be a string"
-            )
+            raise ValueError(f"Translation {key!r} in {catalog_path} must be a string")
 
 
 class I18n:
