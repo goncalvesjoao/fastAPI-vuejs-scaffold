@@ -39,19 +39,8 @@ def find_all_by(
     )
 
 
-def find_by(
-    session: Session,
-    user_uid: str,
-    id: int | None = None,
-    title: str | None = None,
-) -> Post | None:
-    statement = select(Post).where(Post.user_uid == user_uid)
-
-    if id is not None:
-        statement = statement.where(Post.id == id)
-
-    if title is not None:
-        statement = statement.where(Post.title == title)
+def find_by(session: Session, user_uid: str, **kwargs) -> Post | None:
+    statement = select(Post).filter_by(user_uid=user_uid, **kwargs)
 
     return session.exec(statement).first()
 

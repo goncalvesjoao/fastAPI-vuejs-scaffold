@@ -34,10 +34,8 @@ def find_all_by(
     )
 
 
-def find_by(
-    session: Session, user_uid: str, id: int | None = None
-) -> PostPublic | None:
-    record = post_repository.find_by(session, user_uid, id)
+def find_by(session: Session, user_uid: str, **kwargs) -> PostPublic | None:
+    record = post_repository.find_by(session, user_uid, **kwargs)
 
     if record is None:
         return None
