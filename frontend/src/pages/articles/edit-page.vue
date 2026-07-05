@@ -4,14 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useArticlesStore } from '@/stores'
 import { ArticleNatureEnum, type Article } from '@/entities'
-import type { SelectItem } from '@nuxt/ui'
-import { type FormErrorApi, useApiFormErrors } from '@/composables'
+import { type FormErrorApi, useFormErrors, useEnums } from '@/composables'
 
 const toast = useToast()
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const articlesStore = useArticlesStore()
+const { enumToSelectOptions } = useEnums()
 
 const articleId = computed(() => Number(route.params.id))
 const article = ref<Article | undefined>(articlesStore.getById(articleId.value))
@@ -22,7 +22,7 @@ const loadError = ref<Error | undefined>(undefined)
 const updating = ref(false)
 const updateError = ref<Error | undefined>(undefined)
 const updateFormRef = ref<FormErrorApi>()
-const { clearFormErrors, setFormErrors } = useApiFormErrors(updateFormRef)
+const { clearFormErrors, setFormErrors } = useFormErrors(updateFormRef)
 const updateState = ref({
   content: '',
   nature: ArticleNatureEnum.Standard,
@@ -68,12 +68,6 @@ async function handleSubmit() {
     })
     .finally(() => (updating.value = false))
 }
-
-const natureItems = computed<SelectItem[]>(() => [
-  { label: t('articles.natures.standard'), value: ArticleNatureEnum.Standard },
-  { label: t('articles.natures.journal'), value: ArticleNatureEnum.Journal },
-  { label: t('articles.natures.scientific'), value: ArticleNatureEnum.Scientific },
-])
 
 const dropdownItems = computed(() => [
   {
@@ -160,7 +154,10 @@ watch(
         <h1 v-else>{{ t('articles.withId', { id: articleId }) }}</h1>
 
         <template v-if="article" #extra-buttons>
-          <UIcon :name="article.busyIcon" :class="`lg:hidden size-5 mr-2 ${article.busyCssClass}`" />
+          <UIcon
+            :name="article.busyIcon"
+            :class="`lg:hidden size-5 mr-2 ${article.busyCssClass}`"
+          />
 
           <UButton
             color="neutral"
@@ -194,7 +191,11 @@ watch(
             </UFormField>
 
             <UFormField :label="t('common.nature')" name="nature">
-              <USelect v-model="updateState.nature" :items="natureItems" class="w-full" />
+              <USelect
+                v-model="updateState.nature"
+                :items="enumToSelectOptions(ArticleNatureEnum)"
+                class="w-full"
+              />
             </UFormField>
 
             <UButton
@@ -235,5 +236,10 @@ watch(
     @done="handleDeleted"
   />
 
-  <ArticleRenameModal v-if="article" v-model:open="renameModalOpen" :article="article" @done="handleRenamed" />
+  <ArticleRenameModal
+    v-if="article"
+    v-model:open="renameModalOpen"
+    :article="article"
+    @done="handleRenamed"
+  />
 </template>

@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useArticlesStore } from '@/stores'
 import { Article } from '@/entities'
-import { type FormErrorApi, useApiFormErrors, useErrorReporter } from '@/composables'
+import { type FormErrorApi, useFormErrors, useErrorReporter } from '@/composables'
 
 const toast = useToast()
 const { t } = useI18n()
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 }>()
 
 const renameFormRef = ref<FormErrorApi>()
-const { clearFormErrors, setFormErrors } = useApiFormErrors(renameFormRef)
+const { clearFormErrors, setFormErrors } = useFormErrors(renameFormRef)
 const renameError = ref<Error | undefined>(undefined)
 const renameState = ref({ title: props.article.title })
 const renaming = ref(false)

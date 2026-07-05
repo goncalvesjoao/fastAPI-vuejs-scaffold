@@ -29,6 +29,13 @@ export default {
       lastMonth: '過去1か月',
     },
   },
+  enums: {
+    ArticleNatureEnum: {
+      standard: '標準',
+      journal: '日記',
+      scientific: '科学',
+    },
+  },
   articles: {
     singular: '記事',
     create: '記事を作成',
@@ -47,11 +54,6 @@ export default {
       loading: '読み込み中…',
       updating: '更新中…',
       deleting: '削除中…',
-    },
-    natures: {
-      standard: '標準',
-      journal: '日記',
-      scientific: '科学',
     },
     notifications: {
       created: '記事を作成しました',

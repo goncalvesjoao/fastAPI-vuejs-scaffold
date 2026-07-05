@@ -29,6 +29,13 @@ export default {
       lastMonth: 'Last Month',
     },
   },
+  enums: {
+    ArticleNatureEnum: {
+      standard: 'Standard',
+      journal: 'Journal',
+      scientific: 'Scientific',
+    },
+  },
   articles: {
     singular: 'Article',
     create: 'Create Article',
@@ -49,11 +56,6 @@ export default {
       loading: 'Loading…',
       updating: 'Updating…',
       deleting: 'Deleting…',
-    },
-    natures: {
-      standard: 'Standard',
-      journal: 'Journal',
-      scientific: 'Scientific',
     },
     notifications: {
       created: 'Article created',

@@ -1,27 +1,32 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import type { SelectItem } from '@nuxt/ui'
 import { useArticlesStore } from '@/stores'
-import { ArticleNatureEnum, type CreateArticleInputDtoType } from '@/entities'
-import { type FormErrorApi, useApiFormErrors, useErrorReporter } from '@/composables'
+import { ArticleNatureEnum } from '@/entities'
+import {
+  type FormErrorApi,
+  useFormErrors,
+  useErrorReporter,
+  useI18n,
+  useEnums,
+} from '@/composables'
 
-const toast = useToast()
 const { t } = useI18n()
+const toast = useToast()
 const router = useRouter()
 const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
+const { enumToSelectOptions } = useEnums()
 
 const creating = ref(false)
-const createState = ref<CreateArticleInputDtoType>({
+const createState = ref({
   title: '',
   content: '',
   nature: ArticleNatureEnum.Standard,
 })
 const createError = ref<Error | undefined>(undefined)
 const createFormRef = ref<FormErrorApi>()
-const { clearFormErrors, setFormErrors } = useApiFormErrors(createFormRef)
+const { clearFormErrors, setFormErrors } = useFormErrors(createFormRef)
 
 const cannotCreate = computed(() => creating.value || createError.value !== undefined)
 
@@ -61,12 +66,6 @@ async function handleSubmit() {
       creating.value = false
     })
 }
-
-const natureItems = computed<SelectItem[]>(() => [
-  { label: t('articles.natures.standard'), value: ArticleNatureEnum.Standard },
-  { label: t('articles.natures.journal'), value: ArticleNatureEnum.Journal },
-  { label: t('articles.natures.scientific'), value: ArticleNatureEnum.Scientific },
-])
 </script>
 
 <template>
@@ -98,7 +97,11 @@ const natureItems = computed<SelectItem[]>(() => [
             </UFormField>
 
             <UFormField :label="t('common.nature')" name="nature">
-              <USelect v-model="createState.nature" :items="natureItems" class="w-full" />
+              <USelect
+                v-model="createState.nature"
+                :items="enumToSelectOptions(ArticleNatureEnum)"
+                class="w-full"
+              />
             </UFormField>
 
             <UButton
