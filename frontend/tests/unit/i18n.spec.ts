@@ -11,7 +11,7 @@ describe('i18n', () => {
     setLocale('ja-JP')
 
     expect(currentLocale()).toBe('ja')
-    expect(translate('posts.create')).toBe('投稿を作成')
+    expect(translate('articles.create')).toBe('記事を作成')
     expect(document.documentElement.lang).toBe('ja')
   })
 
@@ -19,6 +19,6 @@ describe('i18n', () => {
     setLocale('pt-BR')
 
     expect(currentLocale()).toBe('en')
-    expect(translate('posts.create')).toBe('Create Post')
+    expect(translate('articles.create')).toBe('Create Article')
   })
 })

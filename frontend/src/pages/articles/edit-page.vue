@@ -2,8 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { usePostsStore } from '@/stores'
-import { PostNatureEnum, type Post } from '@/entities'
+import { useArticlesStore } from '@/stores'
+import { ArticleNatureEnum, type Article } from '@/entities'
 import type { SelectItem } from '@nuxt/ui'
 import { type FormErrorApi, useApiFormErrors } from '@/composables'
 
@@ -11,10 +11,10 @@ const toast = useToast()
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const postsStore = usePostsStore()
+const articlesStore = useArticlesStore()
 
-const postId = computed(() => Number(route.params.id))
-const post = ref<Post | undefined>(postsStore.getById(postId.value))
+const articleId = computed(() => Number(route.params.id))
+const article = ref<Article | undefined>(articlesStore.getById(articleId.value))
 
 const loading = ref(true)
 const loadError = ref<Error | undefined>(undefined)
@@ -25,28 +25,28 @@ const updateFormRef = ref<FormErrorApi>()
 const { clearFormErrors, setFormErrors } = useApiFormErrors(updateFormRef)
 const updateState = ref({
   content: '',
-  nature: PostNatureEnum.Standard,
+  nature: ArticleNatureEnum.Standard,
 })
 
 const deleteDialogOpen = ref(false)
 const renameModalOpen = ref(false)
 
-const isBusy = computed(() => loading.value || updating.value || post.value?.isBusy)
+const isBusy = computed(() => loading.value || updating.value || article.value?.isBusy)
 const cannotUpdate = computed(() => isBusy.value || updateError.value !== undefined)
 
 async function handleSubmit() {
-  if (!post.value) return
+  if (!article.value) return
 
   updating.value = true
   updateError.value = undefined
   clearFormErrors()
 
-  postsStore
-    .updateById(post.value.id, updateState.value)
+  articlesStore
+    .updateById(article.value.id, updateState.value)
     .then((result) => {
       if (result.ok) {
         toast.add({
-          title: t('posts.notifications.updated'),
+          title: t('articles.notifications.updated'),
           icon: 'i-lucide-save-check',
           color: 'success',
         })
@@ -54,15 +54,15 @@ async function handleSubmit() {
         setFormErrors(result.fieldErrors)
 
         toast.add({
-          title: t('posts.errors.updateForm'),
-          description: t('posts.notifications.checkForm'),
+          title: t('articles.errors.updateForm'),
+          description: t('articles.notifications.checkForm'),
           icon: 'i-lucide-save-off',
           color: 'error',
         })
       }
     })
     .catch((error: unknown) => {
-      updateError.value = new Error(t('posts.errors.update'), {
+      updateError.value = new Error(t('articles.errors.update'), {
         cause: error,
       })
     })
@@ -70,14 +70,14 @@ async function handleSubmit() {
 }
 
 const natureItems = computed<SelectItem[]>(() => [
-  { label: t('posts.natures.standard'), value: PostNatureEnum.Standard },
-  { label: t('posts.natures.journal'), value: PostNatureEnum.Journal },
-  { label: t('posts.natures.scientific'), value: PostNatureEnum.Scientific },
+  { label: t('articles.natures.standard'), value: ArticleNatureEnum.Standard },
+  { label: t('articles.natures.journal'), value: ArticleNatureEnum.Journal },
+  { label: t('articles.natures.scientific'), value: ArticleNatureEnum.Scientific },
 ])
 
 const dropdownItems = computed(() => [
   {
-    label: t('posts.rename'),
+    label: t('articles.rename'),
     icon: 'i-lucide-pencil',
     disabled: isBusy.value,
     onSelect() {
@@ -102,19 +102,19 @@ function handleRenamed() {
 function handleDeleted() {
   deleteDialogOpen.value = false
 
-  router.push({ name: 'new-post' })
+  router.push({ name: 'new-article' })
 }
 
 watch(
-  postId,
+  articleId,
   async (id) => {
     loading.value = true
 
-    postsStore
+    articlesStore
       .loadById(id)
-      .then((data) => (post.value = data))
+      .then((data) => (article.value = data))
       .catch((error: unknown) => {
-        loadError.value = new Error(t('posts.errors.load', { id: postId.value }), {
+        loadError.value = new Error(t('articles.errors.load', { id: articleId.value }), {
           cause: error,
         })
       })
@@ -124,13 +124,13 @@ watch(
 )
 
 watch(
-  post,
-  (newPost) => {
-    if (!newPost) return
+  article,
+  (newArticle) => {
+    if (!newArticle) return
 
     updateState.value = {
-      content: newPost.content ?? '',
-      nature: newPost.nature,
+      content: newArticle.content ?? '',
+      nature: newArticle.nature,
     }
   },
   { immediate: true },
@@ -141,12 +141,12 @@ watch(
   <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar>
-        <div v-if="post" class="flex items-center gap-2 min-w-0">
+        <div v-if="article" class="flex items-center gap-2 min-w-0">
           <UDropdownMenu :items="dropdownItems" :content="{ align: 'start' }">
             <UButton
               color="neutral"
               variant="ghost"
-              :label="post.title"
+              :label="article.title"
               trailing-icon="i-lucide-chevron-down"
               class="min-w-0 text-md max-w-70 data-[state=open]:bg-elevated"
               :ui="{
@@ -157,18 +157,18 @@ watch(
           </UDropdownMenu>
         </div>
 
-        <h1 v-else>{{ t('posts.withId', { id: postId }) }}</h1>
+        <h1 v-else>{{ t('articles.withId', { id: articleId }) }}</h1>
 
-        <template v-if="post" #extra-buttons>
-          <UIcon :name="post.busyIcon" :class="`lg:hidden size-5 mr-2 ${post.busyCssClass}`" />
+        <template v-if="article" #extra-buttons>
+          <UIcon :name="article.busyIcon" :class="`lg:hidden size-5 mr-2 ${article.busyCssClass}`" />
 
           <UButton
             color="neutral"
             variant="ghost"
             icon="i-lucide-circle-plus"
             class="lg:hidden"
-            :aria-label="t('navigation.newPost')"
-            :to="{ name: 'new-post' }"
+            :aria-label="t('navigation.newArticle')"
+            :to="{ name: 'new-article' }"
           />
         </template>
       </TopNavbar>
@@ -179,7 +179,7 @@ watch(
         <UnexpectedError v-if="loadError" :error="loadError" class="mx-auto" />
 
         <UForm
-          v-else-if="post"
+          v-else-if="article"
           ref="updateFormRef"
           class="w-full space-y-4"
           :state="updateState"
@@ -207,7 +207,7 @@ watch(
               :disabled="cannotUpdate"
               :loading="updating"
             >
-              {{ t('posts.update') }}
+              {{ t('articles.update') }}
             </UButton>
           </template>
         </UForm>
@@ -221,19 +221,19 @@ watch(
             icon: 'size-11',
           }"
         >
-          <template #title>{{ t('posts.notFound') }}</template>
-          <template #description>{{ t('posts.notFoundDescription') }}</template>
+          <template #title>{{ t('articles.notFound') }}</template>
+          <template #description>{{ t('articles.notFoundDescription') }}</template>
         </UAlert>
       </div>
     </template>
   </UDashboardPanel>
 
-  <PostDeleteDialog
-    v-if="post"
+  <ArticleDeleteDialog
+    v-if="article"
     v-model:open="deleteDialogOpen"
-    :post="post"
+    :article="article"
     @done="handleDeleted"
   />
 
-  <PostRenameModal v-if="post" v-model:open="renameModalOpen" :post="post" @done="handleRenamed" />
+  <ArticleRenameModal v-if="article" v-model:open="renameModalOpen" :article="article" @done="handleRenamed" />
 </template>

@@ -65,7 +65,7 @@ async function checkAuthentication() {
             tag="section"
           >
             <template #action>
-              <UButton :to="{ name: 'new-post' }">{{ t('posts.create') }}</UButton>
+              <UButton :to="{ name: 'new-article' }">{{ t('articles.create') }}</UButton>
             </template>
           </i18n-t>
         </div>

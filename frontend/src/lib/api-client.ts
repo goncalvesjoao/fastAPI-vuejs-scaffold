@@ -1,9 +1,9 @@
 import { Api, type HealthResult } from '@/lib/openapi/Api'
 import {
-  Post,
-  PostNatureEnum,
-  type CreatePostInputDtoType,
-  type UpdatePostInputDtoType,
+  Article,
+  ArticleNatureEnum,
+  type CreateArticleInputDtoType,
+  type UpdateArticleInputDtoType,
 } from '@/entities'
 import { getAuthToken } from '@/composables/use-auth'
 import { currentLocale } from '@/i18n'
@@ -51,14 +51,14 @@ export class ApiClient {
     })
   }
 
-  async getPosts(query?: {
+  async getArticles(query?: {
     page?: number
     pageSize?: number
-    nature?: PostNatureEnum | null
-  }): Promise<PaginatedRecordsType<Post>> {
+    nature?: ArticleNatureEnum | null
+  }): Promise<PaginatedRecordsType<Article>> {
     return new Promise((resolve, reject) => {
       this.openapi.api
-        .getPostsApiPostsGet({
+        .getArticlesApiArticlesGet({
           page: query?.page,
           page_size: query?.pageSize,
           nature: query?.nature,
@@ -71,18 +71,18 @@ export class ApiClient {
             pageSize: data.page_size,
             totalCount: data.total_count,
             totalPages: data.total_pages,
-            records: data.records.map((record) => new Post(record)),
+            records: data.records.map((record) => new Article(record)),
           })
         })
         .catch((error) => reject(apiClientErrorFactory(error)))
     })
   }
 
-  async getPost(id: number): Promise<Post | undefined> {
+  async getArticle(id: number): Promise<Article | undefined> {
     return new Promise((resolve, reject) => {
       this.openapi.api
-        .getPostApiPostsIdGet(id)
-        .then((response) => resolve(new Post(response.data)))
+        .getArticleApiArticlesIdGet(id)
+        .then((response) => resolve(new Article(response.data)))
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)
 
@@ -92,11 +92,11 @@ export class ApiClient {
     })
   }
 
-  async createPost(input: CreatePostInputDtoType): Promise<PersistanceResultType<Post>> {
+  async createArticle(input: CreateArticleInputDtoType): Promise<PersistanceResultType<Article>> {
     return new Promise((resolve, reject) => {
       this.openapi.api
-        .createPostApiPostsPost(input)
-        .then((response) => resolve({ ok: true, data: new Post(response.data) }))
+        .createArticleApiArticlesPost(input)
+        .then((response) => resolve({ ok: true, data: new Article(response.data) }))
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)
 
@@ -109,14 +109,14 @@ export class ApiClient {
     })
   }
 
-  async updatePost(
+  async updateArticle(
     id: number,
-    input: UpdatePostInputDtoType,
-  ): Promise<PersistanceResultType<Post>> {
+    input: UpdateArticleInputDtoType,
+  ): Promise<PersistanceResultType<Article>> {
     return new Promise((resolve, reject) => {
       this.openapi.api
-        .updatePostApiPostsIdPatch(id, input)
-        .then((response) => resolve({ ok: true, data: new Post(response.data) }))
+        .updateArticleApiArticlesIdPatch(id, input)
+        .then((response) => resolve({ ok: true, data: new Article(response.data) }))
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)
 
@@ -129,10 +129,10 @@ export class ApiClient {
     })
   }
 
-  async deletePost(id: number): Promise<boolean> {
+  async deleteArticle(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.openapi.api
-        .deletePostApiPostsIdDelete(id)
+        .deleteArticleApiArticlesIdDelete(id)
         .then(() => resolve(true))
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)

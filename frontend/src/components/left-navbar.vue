@@ -3,20 +3,20 @@ import { computed, ref, watch, onMounted } from 'vue'
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-import { usePostsStore } from '@/stores'
+import { useArticlesStore } from '@/stores'
 import { useAuth, useErrorReporter } from '@/composables'
-import { Post } from '@/entities'
+import { Article } from '@/entities'
 import { groupByDate } from '@/lib'
 
-type SidebarPostItem = NavigationMenuItem & {
-  slot: 'post'
-  post: Post
+type SidebarArticleItem = NavigationMenuItem & {
+  slot: 'article'
+  article: Article
   label: string
 }
 
-const postsStore = usePostsStore()
+const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
-const { records } = storeToRefs(postsStore)
+const { records } = storeToRefs(articlesStore)
 const { locale, t } = useI18n()
 
 let auth: ReturnType<typeof useAuth> | null = null
@@ -40,7 +40,7 @@ watch(isSignedIn, async (signedIn) => {
   if (signedIn) {
     loadRecords()
   } else {
-    postsStore.clear()
+    articlesStore.clear()
   }
 })
 
@@ -49,11 +49,11 @@ function loadRecords() {
 
   loading.value = true
 
-  postsStore
+  articlesStore
     .loadAll()
     .then()
     .catch((error: unknown) => {
-      loadError.value = new Error(t('posts.errors.loadAll'), { cause: error })
+      loadError.value = new Error(t('articles.errors.loadAll'), { cause: error })
 
       errorReporter.capture(loadError.value)
     })
@@ -61,7 +61,7 @@ function loadRecords() {
 
 const sidebarItems = computed(() => {
   const groupsRecords = groupByDate(records.value, (record) => record.createdAt, locale.value)
-  const items: Array<NavigationMenuItem | SidebarPostItem> = []
+  const items: Array<NavigationMenuItem | SidebarArticleItem> = []
 
   groupsRecords.forEach((groupCollection) => {
     items.push({
@@ -69,18 +69,18 @@ const sidebarItems = computed(() => {
       type: 'label' as const,
     })
 
-    groupCollection.collection.forEach((post) => {
-      const accessibleLabel = [post.title, post.busyLabel].filter(Boolean).join(' - ')
+    groupCollection.collection.forEach((article) => {
+      const accessibleLabel = [article.title, article.busyLabel].filter(Boolean).join(' - ')
 
       items.push({
-        post: post,
-        label: post.title,
-        to: `/posts/${post.id}/edit`,
+        article: article,
+        label: article.title,
+        to: `/articles/${article.id}/edit`,
         'aria-label': accessibleLabel,
-        slot: 'post' as const,
+        slot: 'article' as const,
         tooltip: { text: accessibleLabel },
-        icon: post.stateIcon,
-        ui: { linkLeadingIcon: `shrink-0 ${post.stateCssClass}` },
+        icon: article.stateIcon,
+        ui: { linkLeadingIcon: `shrink-0 ${article.stateCssClass}` },
       })
     })
   })
@@ -88,29 +88,29 @@ const sidebarItems = computed(() => {
   return items
 })
 
-const postToRename = ref<Post | null>(null)
+const articleToRename = ref<Article | null>(null)
 const renameModalOpen = computed({
-  get: () => postToRename.value !== null,
+  get: () => articleToRename.value !== null,
   set: (isOpen: boolean) => {
-    if (!isOpen) postToRename.value = null
+    if (!isOpen) articleToRename.value = null
   },
 })
 
-const postToDelete = ref<Post | null>(null)
+const articleToDelete = ref<Article | null>(null)
 const deleteDialogOpen = computed({
-  get: () => postToDelete.value !== null,
+  get: () => articleToDelete.value !== null,
   set: (isOpen: boolean) => {
-    if (!isOpen) postToDelete.value = null
+    if (!isOpen) articleToDelete.value = null
   },
 })
 
-function getPostActions(post: Post): DropdownMenuItem[][] {
+function getArticleActions(article: Article): DropdownMenuItem[][] {
   return [
     [
       {
-        label: t('posts.rename'),
+        label: t('articles.rename'),
         icon: 'i-lucide-pencil',
-        onSelect: () => (postToRename.value = post),
+        onSelect: () => (articleToRename.value = article),
       },
     ],
     [
@@ -118,7 +118,7 @@ function getPostActions(post: Post): DropdownMenuItem[][] {
         label: t('common.delete'),
         icon: 'i-lucide-trash',
         color: 'error' as const,
-        onSelect: () => (postToDelete.value = post),
+        onSelect: () => (articleToDelete.value = article),
       },
     ],
   ]
@@ -148,12 +148,12 @@ function getPostActions(post: Post): DropdownMenuItem[][] {
       <UNavigationMenu
         :items="[
           {
-            label: t('navigation.newPost'),
-            'aria-label': t('navigation.newPost'),
+            label: t('navigation.newArticle'),
+            'aria-label': t('navigation.newArticle'),
             icon: 'i-lucide-circle-plus',
-            tooltip: { text: t('navigation.newPost') },
+            tooltip: { text: t('navigation.newArticle') },
             ui: { linkLeadingIcon: 'size-5 shrink-0' },
-            to: '/posts/new',
+            to: '/articles/new',
           },
         ]"
         :collapsed="collapsed"
@@ -173,8 +173,8 @@ function getPostActions(post: Post): DropdownMenuItem[][] {
             'translate-x-full group-hover:translate-x-0 group-has-data-[state=open]:translate-x-0 transition-transform ms-0 absolute inset-e-px',
         }"
       >
-        <template #post-trailing="{ item }">
-          <UDropdownMenu :items="getPostActions(item.post)" :content="{ align: 'end' }">
+        <template #article-trailing="{ item }">
+          <UDropdownMenu :items="getArticleActions(item.article)" :content="{ align: 'end' }">
             <UButton
               as="div"
               icon="i-lucide-ellipsis"
@@ -182,7 +182,7 @@ function getPostActions(post: Post): DropdownMenuItem[][] {
               variant="link"
               size="sm"
               class="rounded-[5px] hover:bg-accented/50 focus-visible:bg-accented/50 data-[state=open]:bg-accented/50"
-              :aria-label="t('navigation.postActions')"
+              :aria-label="t('navigation.articleActions')"
               tabindex="-1"
               @click.stop.prevent
             />
@@ -196,12 +196,12 @@ function getPostActions(post: Post): DropdownMenuItem[][] {
     </template>
   </UDashboardSidebar>
 
-  <PostDeleteDialog
-    v-if="postToDelete"
+  <ArticleDeleteDialog
+    v-if="articleToDelete"
     v-model:open="deleteDialogOpen"
-    :post="postToDelete"
-    @done="$router.push({ name: 'new-post' })"
+    :article="articleToDelete"
+    @done="$router.push({ name: 'new-article' })"
   />
 
-  <PostRenameModal v-if="postToRename" v-model:open="renameModalOpen" :post="postToRename" />
+  <ArticleRenameModal v-if="articleToRename" v-model:open="renameModalOpen" :article="articleToRename" />
 </template>

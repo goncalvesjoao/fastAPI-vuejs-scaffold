@@ -11,9 +11,9 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { routes } from '@/router/routes'
 import { i18n, setLocale } from '@/i18n'
-import NewPage from '@/pages/posts/new-page.vue'
+import NewPage from '@/pages/articles/new-page.vue'
 
-const { createPostApiPostsPost } = openApiMocks
+const { createArticleApiArticlesPost } = openApiMocks
 
 function validationResponse(
   detail: Array<{
@@ -27,19 +27,19 @@ function validationResponse(
   return { status: 422, error: { detail } }
 }
 
-describe('pages/posts/new-page', () => {
+describe('pages/articles/new-page', () => {
   beforeEach(() => {
     resetOpenApiMocks()
     setLocale('en')
   })
 
   it('shows form errors after submitting invalid data', async () => {
-    createPostApiPostsPost.mockRejectedValueOnce(
+    createArticleApiArticlesPost.mockRejectedValueOnce(
       unprocessableContentResponseFactory({ title: ['Title is required'] }),
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/new')
+    await router.push('/articles/new')
     await router.isReady()
 
     const wrapper = mount(NewPage, {
@@ -55,12 +55,12 @@ describe('pages/posts/new-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(createPostApiPostsPost).toHaveBeenCalledWith(expect.objectContaining({ title: '' }))
+    expect(createArticleApiArticlesPost).toHaveBeenCalledWith(expect.objectContaining({ title: '' }))
     expect(wrapper.text()).toContain('Title is required')
   })
 
   it('reactively translates visible backend errors when the locale changes', async () => {
-    createPostApiPostsPost.mockRejectedValueOnce(
+    createArticleApiArticlesPost.mockRejectedValueOnce(
       validationResponse([
         {
           type: 'string_too_short',
@@ -73,7 +73,7 @@ describe('pages/posts/new-page', () => {
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/new')
+    await router.push('/articles/new')
     await router.isReady()
 
     const wrapper = mount(NewPage, {
@@ -93,7 +93,7 @@ describe('pages/posts/new-page', () => {
   })
 
   it('uses the backend message when the frontend has no translation', async () => {
-    createPostApiPostsPost.mockRejectedValueOnce(
+    createArticleApiArticlesPost.mockRejectedValueOnce(
       validationResponse([
         {
           type: 'custom_backend_rule',
@@ -106,7 +106,7 @@ describe('pages/posts/new-page', () => {
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/new')
+    await router.push('/articles/new')
     await router.isReady()
 
     const wrapper = mount(NewPage, {
@@ -123,7 +123,7 @@ describe('pages/posts/new-page', () => {
   })
 
   it('groups multiple translated errors for the same field', async () => {
-    createPostApiPostsPost.mockRejectedValueOnce(
+    createArticleApiArticlesPost.mockRejectedValueOnce(
       validationResponse([
         {
           type: 'missing',
@@ -143,7 +143,7 @@ describe('pages/posts/new-page', () => {
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/new')
+    await router.push('/articles/new')
     await router.isReady()
 
     const wrapper = mount(NewPage, {
@@ -159,7 +159,7 @@ describe('pages/posts/new-page', () => {
   })
 
   it('does not restore a cleared backend error after changing locale', async () => {
-    createPostApiPostsPost.mockRejectedValueOnce(
+    createArticleApiArticlesPost.mockRejectedValueOnce(
       validationResponse([
         {
           type: 'string_too_short',
@@ -172,7 +172,7 @@ describe('pages/posts/new-page', () => {
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/new')
+    await router.push('/articles/new')
     await router.isReady()
 
     const wrapper = mount(NewPage, {

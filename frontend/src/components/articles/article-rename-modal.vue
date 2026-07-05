@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { usePostsStore } from '@/stores'
-import { Post } from '@/entities'
+import { useArticlesStore } from '@/stores'
+import { Article } from '@/entities'
 import { type FormErrorApi, useApiFormErrors, useErrorReporter } from '@/composables'
 
 const toast = useToast()
 const { t } = useI18n()
-const postsStore = usePostsStore()
+const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
 
 const props = defineProps<{
-  post: Post
+  article: Article
 }>()
 
 const open = defineModel<boolean>('open', { required: true })
@@ -23,10 +23,10 @@ const emit = defineEmits<{
 const renameFormRef = ref<FormErrorApi>()
 const { clearFormErrors, setFormErrors } = useApiFormErrors(renameFormRef)
 const renameError = ref<Error | undefined>(undefined)
-const renameState = ref({ title: props.post.title })
+const renameState = ref({ title: props.article.title })
 const renaming = ref(false)
 const cannotRename = computed(
-  () => props.post.isBusy || renaming.value || renameError.value !== undefined,
+  () => props.article.isBusy || renaming.value || renameError.value !== undefined,
 )
 
 function closeRenameModal() {
@@ -40,15 +40,15 @@ async function handleRename() {
   clearFormErrors()
   renameError.value = undefined
 
-  postsStore
-    .updateById(props.post.id, renameState.value)
+  articlesStore
+    .updateById(props.article.id, renameState.value)
     .then((result) => {
       if (result.ok) {
         closeRenameModal()
         emit('done')
 
         toast.add({
-          title: t('posts.notifications.renamed'),
+          title: t('articles.notifications.renamed'),
           icon: 'i-lucide-save-check',
           color: 'success',
         })
@@ -56,44 +56,48 @@ async function handleRename() {
         setFormErrors(result.fieldErrors)
 
         toast.add({
-          title: t('posts.errors.renameForm'),
-          description: t('posts.notifications.checkForm'),
+          title: t('articles.errors.renameForm'),
+          description: t('articles.notifications.checkForm'),
           icon: 'i-lucide-save-off',
           color: 'error',
         })
       }
     })
     .catch((error: unknown) => {
-      renameError.value = new Error(t('posts.errors.rename'), {
+      renameError.value = new Error(t('articles.errors.rename'), {
         cause: error,
       })
 
       errorReporter.capture(renameError.value, {
-        postId: props.post.id,
+        articleId: props.article.id,
       })
     })
     .finally(() => (renaming.value = false))
 }
 
 watch(
-  () => props.post,
-  (newPost) => {
-    if (!newPost) return
+  () => props.article,
+  (newArticle) => {
+    if (!newArticle) return
 
     renameState.value = {
-      title: newPost.title,
+      title: newArticle.title,
     }
   },
   { immediate: true },
 )
+watch(open, () => {
+  clearFormErrors()
+  renameError.value = undefined
+})
 </script>
 
 <template>
   <UModal
     v-model:open="open"
-    :title="t('posts.renameTitle')"
-    :description="t('posts.renameDescription')"
-    :dismissible="renaming"
+    :title="t('articles.renameTitle')"
+    :description="t('articles.renameDescription')"
+    :dismissible="!renaming"
   >
     <template #body>
       <UnexpectedError v-if="renameError" :error="renameError" class="mx-auto" />

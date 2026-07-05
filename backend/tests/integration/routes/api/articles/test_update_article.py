@@ -1,15 +1,15 @@
 from support.json import pick
 
 
-def test_update_post_updates_post_for_authenticated_user(
+def test_update_article_updates_article_for_authenticated_user(
     test_client,
     auth_headers,
-    post_factory,
+    article_factory,
 ):
-    record = post_factory(user_uid="current_user")
+    record = article_factory(user_uid="current_user")
 
     response = test_client.patch(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         json={
             "title": "New title",
         },
@@ -26,13 +26,13 @@ def test_update_post_updates_post_for_authenticated_user(
     }
 
 
-def test_update_post_returns_unprocessable_content_for_type_check_validations(
-    test_client, auth_headers, post_factory
+def test_update_article_returns_unprocessable_content_for_type_check_validations(
+    test_client, auth_headers, article_factory
 ):
-    record = post_factory(user_uid="current_user")
+    record = article_factory(user_uid="current_user")
 
     response = test_client.patch(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         json={"title": "", "nature": "unknown", "content": ""},
         headers=auth_headers(user_uid="current_user"),
     )
@@ -66,15 +66,15 @@ def test_update_post_returns_unprocessable_content_for_type_check_validations(
     ]
 
 
-def test_update_post_updates_post_when_no_params_were_used(
+def test_update_article_updates_article_when_no_params_were_used(
     test_client,
     auth_headers,
-    post_factory,
+    article_factory,
 ):
-    record = post_factory(user_uid="current_user")
+    record = article_factory(user_uid="current_user")
 
     response = test_client.patch(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         json={},
         headers=auth_headers(user_uid="current_user"),
     )
@@ -82,27 +82,27 @@ def test_update_post_updates_post_when_no_params_were_used(
     assert response.status_code == 200
 
 
-def test_update_post_is_scoped_to_authenticated_user(
+def test_update_article_is_scoped_to_authenticated_user(
     test_client,
     auth_headers,
-    post_factory,
+    article_factory,
 ):
-    record = post_factory(user_uid="another_user")
+    record = article_factory(user_uid="another_user")
 
     response = test_client.patch(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         json={"title": "Not allowed"},
         headers=auth_headers(user_uid="current_user"),
     )
 
     assert response.status_code == 404
     assert response.json() == {
-        "detail": f"Post not found with parameters: id={record.id}"
+        "detail": f"Article not found with parameters: id={record.id}"
     }
 
 
-def test_update_post_requires_authentication(test_client):
-    response = test_client.patch("/api/posts/1", json={"title": "Updated"})
+def test_update_article_requires_authentication(test_client):
+    response = test_client.patch("/api/articles/1", json={"title": "Updated"})
 
     assert response.status_code == 401
     assert response.json() == {"detail": "User not logged in"}

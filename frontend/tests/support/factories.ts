@@ -1,8 +1,8 @@
-export function postPublicFactory(overrides?: Partial<PostPublic>): PostPublic {
+export function articlePublicFactory(overrides?: Partial<ArticlePublic>): ArticlePublic {
   return {
     id: 1,
-    title: 'Test Post',
-    content: 'This is a test post.',
+    title: 'Test Article',
+    content: 'This is a test article.',
     nature: 'standard',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

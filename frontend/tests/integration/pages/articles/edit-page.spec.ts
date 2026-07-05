@@ -1,7 +1,7 @@
 import {
   openApiMocks,
   resetOpenApiMocks,
-  postPublicFactory,
+  articlePublicFactory,
   unprocessableContentResponseFactory,
 } from '../../../support' // Keep this import at the top of the file to ensure that the mocks are hoisted before any other imports
 
@@ -12,23 +12,23 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { routes } from '@/router/routes'
 import { i18n, setLocale } from '@/i18n'
-import EditPage from '@/pages/posts/edit-page.vue'
+import EditPage from '@/pages/articles/edit-page.vue'
 
-const { getPostApiPostsIdGet, updatePostApiPostsIdPatch } = openApiMocks
+const { getArticleApiArticlesIdGet, updateArticleApiArticlesIdPatch } = openApiMocks
 
-describe('pages/posts/edit-page', () => {
+describe('pages/articles/edit-page', () => {
   beforeEach(() => {
     resetOpenApiMocks()
     setLocale('en')
   })
 
-  it('shows a form to edit the requested Post', async () => {
-    getPostApiPostsIdGet.mockResolvedValueOnce({
-      data: postPublicFactory({ id: 777, title: 'Test Post' }),
+  it('shows a form to edit the requested Article', async () => {
+    getArticleApiArticlesIdGet.mockResolvedValueOnce({
+      data: articlePublicFactory({ id: 777, title: 'Test Article' }),
     })
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/777/edit')
+    await router.push('/articles/777/edit')
     await router.isReady()
 
     const wrapper = mount(EditPage, {
@@ -38,21 +38,21 @@ describe('pages/posts/edit-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(getPostApiPostsIdGet).toHaveBeenCalledWith(777)
-    expect(wrapper.text()).toContain('Test Post')
-    expect(wrapper.text()).toContain('Update Post')
+    expect(getArticleApiArticlesIdGet).toHaveBeenCalledWith(777)
+    expect(wrapper.text()).toContain('Test Article')
+    expect(wrapper.text()).toContain('Update Article')
   })
 
   it('shows form errors after submitting invalid data', async () => {
-    getPostApiPostsIdGet.mockResolvedValueOnce({
-      data: postPublicFactory({ id: 777 }),
+    getArticleApiArticlesIdGet.mockResolvedValueOnce({
+      data: articlePublicFactory({ id: 777 }),
     })
-    updatePostApiPostsIdPatch.mockRejectedValueOnce(
+    updateArticleApiArticlesIdPatch.mockRejectedValueOnce(
       unprocessableContentResponseFactory({ content: ['Content is required'] }),
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/777/edit')
+    await router.push('/articles/777/edit')
     await router.isReady()
 
     const wrapper = mount(EditPage, {
@@ -68,7 +68,7 @@ describe('pages/posts/edit-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(updatePostApiPostsIdPatch).toHaveBeenCalledWith(
+    expect(updateArticleApiArticlesIdPatch).toHaveBeenCalledWith(
       777,
       expect.objectContaining({ content: '' }),
     )
@@ -76,13 +76,13 @@ describe('pages/posts/edit-page', () => {
   })
 
   it('shows the unexpected error after submitting and receiving a 503 response', async () => {
-    getPostApiPostsIdGet.mockResolvedValueOnce({
-      data: postPublicFactory({ id: 666 }),
+    getArticleApiArticlesIdGet.mockResolvedValueOnce({
+      data: articlePublicFactory({ id: 666 }),
     })
-    updatePostApiPostsIdPatch.mockRejectedValueOnce({ status: 503 })
+    updateArticleApiArticlesIdPatch.mockRejectedValueOnce({ status: 503 })
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/666/edit')
+    await router.push('/articles/666/edit')
     await router.isReady()
 
     const wrapper = mount(EditPage, {
@@ -97,15 +97,15 @@ describe('pages/posts/edit-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(wrapper.text()).toContain('Failed to update the Post')
-    expect(wrapper.text()).not.toContain('Update Post')
+    expect(wrapper.text()).toContain('Failed to update the Article')
+    expect(wrapper.text()).not.toContain('Update Article')
   })
 
   it('shows the unexpected error when a 503 request fails', async () => {
-    getPostApiPostsIdGet.mockRejectedValueOnce({ status: 503 })
+    getArticleApiArticlesIdGet.mockRejectedValueOnce({ status: 503 })
 
     const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/posts/666/edit')
+    await router.push('/articles/666/edit')
     await router.isReady()
 
     const wrapper = mount(EditPage, {
@@ -115,8 +115,8 @@ describe('pages/posts/edit-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(getPostApiPostsIdGet).toHaveBeenCalledWith(666)
-    expect(wrapper.text()).toContain('Failed to get Post with ID #666')
-    expect(wrapper.text()).not.toContain('Update Post')
+    expect(getArticleApiArticlesIdGet).toHaveBeenCalledWith(666)
+    expect(wrapper.text()).toContain('Failed to get Article with ID #666')
+    expect(wrapper.text()).not.toContain('Update Article')
   })
 })

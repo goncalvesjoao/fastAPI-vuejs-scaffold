@@ -3,21 +3,21 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { SelectItem } from '@nuxt/ui'
-import { usePostsStore } from '@/stores'
-import { PostNatureEnum, type CreatePostInputDtoType } from '@/entities'
+import { useArticlesStore } from '@/stores'
+import { ArticleNatureEnum, type CreateArticleInputDtoType } from '@/entities'
 import { type FormErrorApi, useApiFormErrors, useErrorReporter } from '@/composables'
 
 const toast = useToast()
 const { t } = useI18n()
 const router = useRouter()
-const postsStore = usePostsStore()
+const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
 
 const creating = ref(false)
-const createState = ref<CreatePostInputDtoType>({
+const createState = ref<CreateArticleInputDtoType>({
   title: '',
   content: '',
-  nature: PostNatureEnum.Standard,
+  nature: ArticleNatureEnum.Standard,
 })
 const createError = ref<Error | undefined>(undefined)
 const createFormRef = ref<FormErrorApi>()
@@ -30,14 +30,14 @@ async function handleSubmit() {
   createError.value = undefined
   clearFormErrors()
 
-  postsStore
+  articlesStore
     .create(createState.value)
     .then((result) => {
       if (result.ok) {
-        router.push({ name: 'post-details', params: { id: result.data.id } })
+        router.push({ name: 'article-details', params: { id: result.data.id } })
 
         toast.add({
-          title: t('posts.notifications.created'),
+          title: t('articles.notifications.created'),
           icon: 'i-lucide-circle-check',
           color: 'success',
         })
@@ -45,15 +45,15 @@ async function handleSubmit() {
         setFormErrors(result.fieldErrors)
 
         toast.add({
-          title: t('posts.errors.createForm'),
-          description: t('posts.notifications.checkForm'),
+          title: t('articles.errors.createForm'),
+          description: t('articles.notifications.checkForm'),
           icon: 'i-lucide-circle-x',
           color: 'error',
         })
       }
     })
     .catch((error: unknown) => {
-      createError.value = new Error(t('posts.errors.create'), { cause: error })
+      createError.value = new Error(t('articles.errors.create'), { cause: error })
 
       errorReporter.capture(createError.value)
     })
@@ -63,9 +63,9 @@ async function handleSubmit() {
 }
 
 const natureItems = computed<SelectItem[]>(() => [
-  { label: t('posts.natures.standard'), value: PostNatureEnum.Standard },
-  { label: t('posts.natures.journal'), value: PostNatureEnum.Journal },
-  { label: t('posts.natures.scientific'), value: PostNatureEnum.Scientific },
+  { label: t('articles.natures.standard'), value: ArticleNatureEnum.Standard },
+  { label: t('articles.natures.journal'), value: ArticleNatureEnum.Journal },
+  { label: t('articles.natures.scientific'), value: ArticleNatureEnum.Scientific },
 ])
 </script>
 
@@ -73,7 +73,7 @@ const natureItems = computed<SelectItem[]>(() => [
   <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar
-        ><h1>{{ t('navigation.newPost') }}</h1></TopNavbar
+        ><h1>{{ t('navigation.newArticle') }}</h1></TopNavbar
       >
     </template>
 
@@ -111,7 +111,7 @@ const natureItems = computed<SelectItem[]>(() => [
               :disabled="cannotCreate"
               :loading="creating"
             >
-              {{ t('posts.create') }}
+              {{ t('articles.create') }}
             </UButton>
           </template>
         </UForm>

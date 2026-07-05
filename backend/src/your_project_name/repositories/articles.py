@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlmodel import Session, col, select
 
-from your_project_name.models import PaginatedRecords, Post, PostNatureEnum
+from your_project_name.models import PaginatedRecords, Article, ArticleNatureEnum
 
 
 def find_all_by(
@@ -9,21 +9,21 @@ def find_all_by(
     user_uid: str,
     page: int = 1,
     page_size: int = 10,
-    nature: PostNatureEnum | None = None,
-) -> PaginatedRecords[Post]:
+    nature: ArticleNatureEnum | None = None,
+) -> PaginatedRecords[Article]:
     offset = (page - 1) * page_size
 
-    statement = select(Post).where(Post.user_uid == user_uid)
+    statement = select(Article).where(Article.user_uid == user_uid)
     total_count_statement = (
-        select(func.count()).select_from(Post).where(Post.user_uid == user_uid)
+        select(func.count()).select_from(Article).where(Article.user_uid == user_uid)
     )
 
     if nature is not None:
-        statement = statement.where(Post.nature == nature)
-        total_count_statement = total_count_statement.where(Post.nature == nature)
+        statement = statement.where(Article.nature == nature)
+        total_count_statement = total_count_statement.where(Article.nature == nature)
 
     statement = (
-        statement.order_by(col(Post.updated_at).desc(), col(Post.id).desc())
+        statement.order_by(col(Article.updated_at).desc(), col(Article.id).desc())
         .offset(offset)
         .limit(page_size)
     )
@@ -31,7 +31,7 @@ def find_all_by(
     records = list(session.exec(statement).all())
     total_count = int(session.exec(total_count_statement).one())
 
-    return PaginatedRecords[Post].create(
+    return PaginatedRecords[Article].create(
         records=records,
         page=page,
         page_size=page_size,
@@ -39,8 +39,8 @@ def find_all_by(
     )
 
 
-def find_by(session: Session, user_uid: str, **kwargs) -> Post | None:
-    statement = select(Post).filter_by(user_uid=user_uid, **kwargs)
+def find_by(session: Session, user_uid: str, **kwargs) -> Article | None:
+    statement = select(Article).filter_by(user_uid=user_uid, **kwargs)
 
     return session.exec(statement).first()
 
@@ -50,9 +50,9 @@ def create(
     user_uid: str,
     title: str,
     content: str,
-    nature: PostNatureEnum,
-) -> Post:
-    record = Post(
+    nature: ArticleNatureEnum,
+) -> Article:
+    record = Article(
         user_uid=user_uid,
         title=title,
         content=content,
@@ -62,12 +62,12 @@ def create(
     return save(session, record)
 
 
-def delete(session: Session, record: Post) -> None:
+def delete(session: Session, record: Article) -> None:
     session.delete(record)
     session.flush()
 
 
-def save(session: Session, record: Post) -> Post:
+def save(session: Session, record: Article) -> Article:
     session.add(record)
     session.flush()
 

@@ -6,7 +6,7 @@ from sqlalchemy.engine import make_url
 from sqlmodel import Session, SQLModel
 
 from your_project_name.models import (
-    Post,  # noqa: F401 ensure models are registered with SQLModel.metadata
+    Article,  # noqa: F401 ensure models are registered with SQLModel.metadata
 )
 from your_project_name.settings import Settings, settings
 

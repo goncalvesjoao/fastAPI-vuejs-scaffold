@@ -23,10 +23,10 @@
         }
       }
     },
-    "/api/posts": {
+    "/api/articles": {
       "get": {
-        "summary": "Get Posts",
-        "operationId": "get_posts_api_posts_get",
+        "summary": "Get Articles",
+        "operationId": "get_articles_api_articles_get",
         "parameters": [
           {
             "name": "page",
@@ -58,7 +58,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/PostNatureEnum"
+                  "$ref": "#/components/schemas/ArticleNatureEnum"
                 },
                 {
                   "type": "null"
@@ -74,7 +74,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedRecords_PostPublic_"
+                  "$ref": "#/components/schemas/PaginatedRecords_ArticlePublic_"
                 }
               }
             }
@@ -102,14 +102,14 @@
         }
       },
       "post": {
-        "summary": "Create Post",
-        "operationId": "create_post_api_posts_post",
+        "summary": "Create Article",
+        "operationId": "create_article_api_articles_post",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreatePostInputDto"
+                "$ref": "#/components/schemas/CreateArticleInputDto"
               }
             }
           }
@@ -120,7 +120,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostPublic"
+                  "$ref": "#/components/schemas/ArticlePublic"
                 }
               }
             }
@@ -148,10 +148,10 @@
         }
       }
     },
-    "/api/posts/{id}": {
+    "/api/articles/{id}": {
       "get": {
-        "summary": "Get Post",
-        "operationId": "get_post_api_posts__id__get",
+        "summary": "Get Article",
+        "operationId": "get_article_api_articles__id__get",
         "parameters": [
           {
             "name": "id",
@@ -169,7 +169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostPublic"
+                  "$ref": "#/components/schemas/ArticlePublic"
                 }
               }
             }
@@ -207,8 +207,8 @@
         }
       },
       "patch": {
-        "summary": "Update Post",
-        "operationId": "update_post_api_posts__id__patch",
+        "summary": "Update Article",
+        "operationId": "update_article_api_articles__id__patch",
         "parameters": [
           {
             "name": "id",
@@ -225,7 +225,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdatePostInputDto"
+                "$ref": "#/components/schemas/UpdateArticleInputDto"
               }
             }
           }
@@ -236,7 +236,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostPublic"
+                  "$ref": "#/components/schemas/ArticlePublic"
                 }
               }
             }
@@ -274,8 +274,8 @@
         }
       },
       "delete": {
-        "summary": "Delete Post",
-        "operationId": "delete_post_api_posts__id__delete",
+        "summary": "Delete Article",
+        "operationId": "delete_article_api_articles__id__delete",
         "parameters": [
           {
             "name": "id",
@@ -327,7 +327,68 @@
   },
   "components": {
     "schemas": {
-      "CreatePostInputDto": {
+      "ArticleNatureEnum": {
+        "type": "string",
+        "enum": [
+          "scientific",
+          "standard",
+          "journal"
+        ],
+        "title": "ArticleNatureEnum"
+      },
+      "ArticlePublic": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Content"
+          },
+          "nature": {
+            "$ref": "#/components/schemas/ArticleNatureEnum",
+            "maxLength": 255,
+            "minLength": 1
+          },
+          "user_uid": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "User Uid"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "content",
+          "nature",
+          "user_uid",
+          "id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ArticlePublic"
+      },
+      "CreateArticleInputDto": {
         "properties": {
           "title": {
             "type": "string",
@@ -344,7 +405,7 @@
           "nature": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/PostNatureEnum",
+                "$ref": "#/components/schemas/ArticleNatureEnum",
                 "maxLength": 255
               },
               {
@@ -358,7 +419,7 @@
           "title",
           "content"
         ],
-        "title": "CreatePostInputDto"
+        "title": "CreateArticleInputDto"
       },
       "HTTPErrorResponse": {
         "properties": {
@@ -423,7 +484,7 @@
         ],
         "title": "HealthResult"
       },
-      "PaginatedRecords_PostPublic_": {
+      "PaginatedRecords_ArticlePublic_": {
         "properties": {
           "page": {
             "type": "integer",
@@ -443,7 +504,7 @@
           },
           "records": {
             "items": {
-              "$ref": "#/components/schemas/PostPublic"
+              "$ref": "#/components/schemas/ArticlePublic"
             },
             "type": "array",
             "title": "Records"
@@ -457,76 +518,16 @@
           "total_pages",
           "records"
         ],
-        "title": "PaginatedRecords[PostPublic]"
+        "title": "PaginatedRecords[ArticlePublic]"
       },
-      "PostNatureEnum": {
-        "type": "string",
-        "enum": [
-          "scientific",
-          "standard",
-          "journal"
-        ],
-        "title": "PostNatureEnum"
-      },
-      "PostPublic": {
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 1,
-            "title": "Title"
-          },
-          "content": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 1,
-            "title": "Content"
-          },
-          "nature": {
-            "$ref": "#/components/schemas/PostNatureEnum",
-            "maxLength": 255,
-            "minLength": 1
-          },
-          "user_uid": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 1,
-            "title": "User Uid"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "title",
-          "content",
-          "nature",
-          "user_uid",
-          "id",
-          "created_at",
-          "updated_at"
-        ],
-        "title": "PostPublic"
-      },
-      "UpdatePostInputDto": {
+      "UpdateArticleInputDto": {
         "properties": {
           "title": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255
+                "maxLength": 255,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -550,7 +551,7 @@
           "nature": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/PostNatureEnum",
+                "$ref": "#/components/schemas/ArticleNatureEnum",
                 "maxLength": 255
               },
               {
@@ -560,7 +561,7 @@
           }
         },
         "type": "object",
-        "title": "UpdatePostInputDto"
+        "title": "UpdateArticleInputDto"
       },
       "ValidationError": {
         "properties": {

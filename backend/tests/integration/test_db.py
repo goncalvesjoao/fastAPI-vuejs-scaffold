@@ -20,4 +20,4 @@ def test_init_db_creates_tables(tmp_path):
     inspector = inspect(engine)
     table_names = inspector.get_table_names()
 
-    assert "posts" in table_names
+    assert "articles" in table_names

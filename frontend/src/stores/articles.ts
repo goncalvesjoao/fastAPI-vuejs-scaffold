@@ -3,16 +3,16 @@ import { defineStore } from 'pinia'
 
 import { apiClient } from '@/lib'
 import {
-  Post,
-  type CreatePostInputDtoType,
+  Article,
+  type CreateArticleInputDtoType,
   type PersistanceResultType,
-  type UpdatePostInputDtoType,
+  type UpdateArticleInputDtoType,
 } from '@/entities'
 
 const MAX_PAGES = 100
 
-export const usePostsStore = defineStore('posts', () => {
-  const _recordsById = reactive<Record<number, Post>>({})
+export const useArticlesStore = defineStore('articles', () => {
+  const _recordsById = reactive<Record<number, Article>>({})
   let _loadAllPromise: Promise<void> | null = null
   let _loadVersion = 0
 
@@ -22,11 +22,11 @@ export const usePostsStore = defineStore('posts', () => {
     ),
   )
 
-  function getById(id: number): Post | undefined {
+  function getById(id: number): Article | undefined {
     return _recordsById[id]
   }
 
-  function upsert(record: Post): Post {
+  function upsert(record: Article): Article {
     const existing = getById(record.id)
 
     if (existing) {
@@ -37,7 +37,7 @@ export const usePostsStore = defineStore('posts', () => {
     return (_recordsById[record.id] = record)
   }
 
-  function upsertMany(records: Post[]): Post[] {
+  function upsertMany(records: Article[]): Article[] {
     return records.map(upsert)
   }
 
@@ -54,21 +54,21 @@ export const usePostsStore = defineStore('posts', () => {
     return (_loadAllPromise = request)
   }
 
-  async function create(input: CreatePostInputDtoType): Promise<PersistanceResultType<Post>> {
-    const result = await apiClient.createPost(input)
+  async function create(input: CreateArticleInputDtoType): Promise<PersistanceResultType<Article>> {
+    const result = await apiClient.createArticle(input)
 
     if (result.ok) upsert(result.data)
 
     return result
   }
 
-  async function loadById(id: number): Promise<Post | undefined> {
+  async function loadById(id: number): Promise<Article | undefined> {
     const record = getById(id)
 
     if (record) record.isLoading = true
 
     try {
-      const record = await apiClient.getPost(id)
+      const record = await apiClient.getArticle(id)
 
       return record ? upsert(record) : undefined
     } finally {
@@ -80,14 +80,14 @@ export const usePostsStore = defineStore('posts', () => {
 
   async function updateById(
     id: number,
-    input: UpdatePostInputDtoType,
-  ): Promise<PersistanceResultType<Post>> {
+    input: UpdateArticleInputDtoType,
+  ): Promise<PersistanceResultType<Article>> {
     const record = getById(id)
 
     if (record) record.isUpdating = true
 
     try {
-      const result = await apiClient.updatePost(id, input)
+      const result = await apiClient.updateArticle(id, input)
 
       if (result.ok) upsert(result.data)
 
@@ -105,7 +105,7 @@ export const usePostsStore = defineStore('posts', () => {
     if (record) record.isDeleting = true
 
     try {
-      const result = await apiClient.deletePost(id)
+      const result = await apiClient.deleteArticle(id)
 
       if (record) record.isDeleting = false
       delete _recordsById[id]
@@ -131,7 +131,7 @@ export const usePostsStore = defineStore('posts', () => {
 
   async function _loadAllPages(version: number): Promise<void> {
     for (let page = 1; page <= MAX_PAGES; page++) {
-      const pagination = await apiClient.getPosts({ page })
+      const pagination = await apiClient.getArticles({ page })
       if (version !== _loadVersion) return
 
       upsertMany(pagination.records)

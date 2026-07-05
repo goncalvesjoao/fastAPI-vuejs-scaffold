@@ -10,15 +10,15 @@
  * ---------------------------------------------------------------
  */
 
-/** PostNatureEnum */
-export enum PostNatureEnum {
+/** ArticleNatureEnum */
+export enum ArticleNatureEnum {
   Scientific = "scientific",
   Standard = "standard",
   Journal = "journal",
 }
 
-/** CreatePostInputDto */
-export interface CreatePostInputDto {
+/** ArticlePublic */
+export interface ArticlePublic {
   /**
    * Title
    * @minLength 1
@@ -31,7 +31,46 @@ export interface CreatePostInputDto {
    * @maxLength 255
    */
   content: string;
-  nature?: PostNatureEnum | null;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
+  nature: ArticleNatureEnum;
+  /**
+   * User Uid
+   * @minLength 1
+   * @maxLength 255
+   */
+  user_uid: string;
+  /** Id */
+  id: number;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+}
+
+/** CreateArticleInputDto */
+export interface CreateArticleInputDto {
+  /**
+   * Title
+   * @minLength 1
+   * @maxLength 255
+   */
+  title: string;
+  /**
+   * Content
+   * @minLength 1
+   * @maxLength 255
+   */
+  content: string;
+  nature?: ArticleNatureEnum | null;
 }
 
 /** HTTPErrorResponse */
@@ -54,8 +93,8 @@ export interface HealthResult {
   database: boolean;
 }
 
-/** PaginatedRecords[PostPublic] */
-export interface PaginatedRecordsPostPublic {
+/** PaginatedRecords[ArticlePublic] */
+export interface PaginatedRecordsArticlePublic {
   /** Page */
   page: number;
   /** Page Size */
@@ -65,55 +104,16 @@ export interface PaginatedRecordsPostPublic {
   /** Total Pages */
   total_pages: number;
   /** Records */
-  records: PostPublic[];
+  records: ArticlePublic[];
 }
 
-/** PostPublic */
-export interface PostPublic {
-  /**
-   * Title
-   * @minLength 1
-   * @maxLength 255
-   */
-  title: string;
-  /**
-   * Content
-   * @minLength 1
-   * @maxLength 255
-   */
-  content: string;
-  /**
-   * @minLength 1
-   * @maxLength 255
-   */
-  nature: PostNatureEnum;
-  /**
-   * User Uid
-   * @minLength 1
-   * @maxLength 255
-   */
-  user_uid: string;
-  /** Id */
-  id: number;
-  /**
-   * Created At
-   * @format date-time
-   */
-  created_at: string;
-  /**
-   * Updated At
-   * @format date-time
-   */
-  updated_at: string;
-}
-
-/** UpdatePostInputDto */
-export interface UpdatePostInputDto {
+/** UpdateArticleInputDto */
+export interface UpdateArticleInputDto {
   /** Title */
   title?: string | null;
   /** Content */
   content?: string | null;
-  nature?: PostNatureEnum | null;
+  nature?: ArticleNatureEnum | null;
 }
 
 /** ValidationError */
@@ -411,11 +411,11 @@ export class Api<
     /**
      * No description
      *
-     * @name GetPostsApiPostsGet
-     * @summary Get Posts
-     * @request GET:/api/posts
+     * @name GetArticlesApiArticlesGet
+     * @summary Get Articles
+     * @request GET:/api/articles
      */
-    getPostsApiPostsGet: (
+    getArticlesApiArticlesGet: (
       query?: {
         /**
          * Page
@@ -431,15 +431,15 @@ export class Api<
          */
         page_size?: number;
         /** Nature */
-        nature?: PostNatureEnum | null;
+        nature?: ArticleNatureEnum | null;
       },
       params: RequestParams = {},
     ) =>
       this.request<
-        PaginatedRecordsPostPublic,
+        PaginatedRecordsArticlePublic,
         HTTPErrorResponse | HTTPValidationError
       >({
-        path: `/api/posts`,
+        path: `/api/articles`,
         method: "GET",
         query: query,
         format: "json",
@@ -449,16 +449,16 @@ export class Api<
     /**
      * No description
      *
-     * @name CreatePostApiPostsPost
-     * @summary Create Post
-     * @request POST:/api/posts
+     * @name CreateArticleApiArticlesPost
+     * @summary Create Article
+     * @request POST:/api/articles
      */
-    createPostApiPostsPost: (
-      data: CreatePostInputDto,
+    createArticleApiArticlesPost: (
+      data: CreateArticleInputDto,
       params: RequestParams = {},
     ) =>
-      this.request<PostPublic, HTTPErrorResponse | HTTPValidationError>({
-        path: `/api/posts`,
+      this.request<ArticlePublic, HTTPErrorResponse | HTTPValidationError>({
+        path: `/api/articles`,
         method: "POST",
         body: data,
         type: ContentType.Json,
@@ -469,13 +469,13 @@ export class Api<
     /**
      * No description
      *
-     * @name GetPostApiPostsIdGet
-     * @summary Get Post
-     * @request GET:/api/posts/{id}
+     * @name GetArticleApiArticlesIdGet
+     * @summary Get Article
+     * @request GET:/api/articles/{id}
      */
-    getPostApiPostsIdGet: (id: number, params: RequestParams = {}) =>
-      this.request<PostPublic, HTTPErrorResponse | HTTPValidationError>({
-        path: `/api/posts/${id}`,
+    getArticleApiArticlesIdGet: (id: number, params: RequestParams = {}) =>
+      this.request<ArticlePublic, HTTPErrorResponse | HTTPValidationError>({
+        path: `/api/articles/${id}`,
         method: "GET",
         format: "json",
         ...params,
@@ -484,17 +484,17 @@ export class Api<
     /**
      * No description
      *
-     * @name UpdatePostApiPostsIdPatch
-     * @summary Update Post
-     * @request PATCH:/api/posts/{id}
+     * @name UpdateArticleApiArticlesIdPatch
+     * @summary Update Article
+     * @request PATCH:/api/articles/{id}
      */
-    updatePostApiPostsIdPatch: (
+    updateArticleApiArticlesIdPatch: (
       id: number,
-      data: UpdatePostInputDto,
+      data: UpdateArticleInputDto,
       params: RequestParams = {},
     ) =>
-      this.request<PostPublic, HTTPErrorResponse | HTTPValidationError>({
-        path: `/api/posts/${id}`,
+      this.request<ArticlePublic, HTTPErrorResponse | HTTPValidationError>({
+        path: `/api/articles/${id}`,
         method: "PATCH",
         body: data,
         type: ContentType.Json,
@@ -505,13 +505,16 @@ export class Api<
     /**
      * No description
      *
-     * @name DeletePostApiPostsIdDelete
-     * @summary Delete Post
-     * @request DELETE:/api/posts/{id}
+     * @name DeleteArticleApiArticlesIdDelete
+     * @summary Delete Article
+     * @request DELETE:/api/articles/{id}
      */
-    deletePostApiPostsIdDelete: (id: number, params: RequestParams = {}) =>
+    deleteArticleApiArticlesIdDelete: (
+      id: number,
+      params: RequestParams = {},
+    ) =>
       this.request<void, HTTPErrorResponse | HTTPValidationError>({
-        path: `/api/posts/${id}`,
+        path: `/api/articles/${id}`,
         method: "DELETE",
         ...params,
       }),

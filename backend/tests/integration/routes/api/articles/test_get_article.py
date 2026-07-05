@@ -1,15 +1,15 @@
 from support.json import pick
 
 
-def test_get_post_returns_post_for_authenticated_user(
+def test_get_article_returns_article_for_authenticated_user(
     test_client,
     auth_headers,
-    post_factory,
+    article_factory,
 ):
-    record = post_factory(user_uid="current_user")
+    record = article_factory(user_uid="current_user")
 
     response = test_client.get(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         headers=auth_headers(user_uid="current_user"),
     )
 
@@ -24,26 +24,26 @@ def test_get_post_returns_post_for_authenticated_user(
     }
 
 
-def test_get_post_is_scoped_to_authenticated_user(
+def test_get_article_is_scoped_to_authenticated_user(
     test_client,
     auth_headers,
-    post_factory,
+    article_factory,
 ):
-    record = post_factory("other_user")
+    record = article_factory("other_user")
 
     response = test_client.get(
-        f"/api/posts/{record.id}",
+        f"/api/articles/{record.id}",
         headers=auth_headers(user_uid="current_user"),
     )
 
     assert response.status_code == 404
     assert response.json() == {
-        "detail": f"Post not found with parameters: id={record.id!r}",
+        "detail": f"Article not found with parameters: id={record.id!r}",
     }
 
 
-def test_get_post_requires_authentication(test_client):
-    response = test_client.get("/api/posts/1")
+def test_get_article_requires_authentication(test_client):
+    response = test_client.get("/api/articles/1")
 
     assert response.status_code == 401
     assert response.json() == {"detail": "User not logged in"}

@@ -18,11 +18,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const cannotDelete = computed(() => props.busy || props.deleting || props.error !== undefined)
-const title = computed(() => t('posts.deleteTitle', { resource: props.resourceClassName }))
+const title = computed(() => t('articles.deleteTitle', { resource: props.resourceClassName }))
 const description = computed(() =>
   props.resourceName
-    ? t('posts.deleteNamedDescription', { name: props.resourceName })
-    : t('posts.deleteUnnamedDescription', { resource: props.resourceClassName }),
+    ? t('articles.deleteNamedDescription', { name: props.resourceName })
+    : t('articles.deleteUnnamedDescription', { resource: props.resourceClassName }),
 )
 
 function closeDialog() {

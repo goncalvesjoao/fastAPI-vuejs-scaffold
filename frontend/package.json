@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "generate-support-files": "node scripts/generate-openapi.js",
+    "generate:openapi": "node scripts/generate-openapi.js",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
