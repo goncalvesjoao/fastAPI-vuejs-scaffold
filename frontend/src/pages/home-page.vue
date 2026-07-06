@@ -36,7 +36,7 @@ async function checkAuthentication() {
 </script>
 
 <template>
-  <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
+  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar
         ><h1>{{ t('.title') }}</h1></TopNavbar
@@ -44,7 +44,7 @@ async function checkAuthentication() {
     </template>
 
     <template #body>
-      <div class="flex items-start h-full w-1/2 mx-auto py-6">
+      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
         <UnexpectedError v-if="authError" :error="authError" class="mx-auto" />
 
         <div v-else class="mx-auto">
@@ -72,7 +72,7 @@ async function checkAuthentication() {
             </template>
           </i18n-t>
         </div>
-      </div>
+      </UContainer>
     </template>
   </UDashboardPanel>
 </template>

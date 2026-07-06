@@ -69,7 +69,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
+  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar
         ><h1>{{ t('.submitLabel') }}</h1></TopNavbar
@@ -77,7 +77,7 @@ async function handleSubmit() {
     </template>
 
     <template #body>
-      <div class="flex items-start h-full w-1/2 mx-auto py-6">
+      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
         <UForm
           ref="createFormRef"
           class="w-full space-y-4"
@@ -118,7 +118,7 @@ async function handleSubmit() {
             </UButton>
           </template>
         </UForm>
-      </div>
+      </UContainer>
     </template>
   </UDashboardPanel>
 </template>

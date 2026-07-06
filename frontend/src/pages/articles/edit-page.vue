@@ -131,7 +131,7 @@ watch(
 </script>
 
 <template>
-  <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
+  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar>
         <div v-if="article" class="flex items-center gap-2 min-w-0">
@@ -171,7 +171,7 @@ watch(
     </template>
 
     <template #body>
-      <div class="flex flex-col gap-4 items-start h-full w-1/2 mx-auto py-6">
+      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
         <UnexpectedError v-if="loadError" :error="loadError" class="mx-auto" />
 
         <UForm
@@ -224,7 +224,7 @@ watch(
           <template #title>{{ t('.notFoundHeading') }}</template>
           <template #description>{{ t('.notFoundDescription') }}</template>
         </UAlert>
-      </div>
+      </UContainer>
     </template>
   </UDashboardPanel>
 

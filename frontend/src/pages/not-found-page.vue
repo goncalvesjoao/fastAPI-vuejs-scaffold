@@ -4,7 +4,7 @@ const { t } = useI18n(import.meta.url)
 </script>
 
 <template>
-  <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
+  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
     <template #header>
       <TopNavbar
         ><h1>{{ t('.title') }}</h1></TopNavbar
@@ -12,7 +12,7 @@ const { t } = useI18n(import.meta.url)
     </template>
 
     <template #body>
-      <div class="flex items-start h-full w-1/2 mx-auto py-6">
+      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
         <div class="mx-auto">
           <h1 class="text-4xl font-bold text-center mb-4">{{ t('.heading') }}</h1>
           <p class="text-center mb-6">
@@ -22,7 +22,7 @@ const { t } = useI18n(import.meta.url)
             <UButton :to="{ name: 'home' }" color="primary">{{ t('.goBackHome') }}</UButton>
           </div>
         </div>
-      </div>
+      </UContainer>
     </template>
   </UDashboardPanel>
 </template>
