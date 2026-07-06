@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { UserButton, SignInButton } from '@clerk/vue'
-import { useI18n } from 'vue-i18n'
-import { clerkEnabled, useAuth } from '@/composables/use-auth'
+import { UserButton } from '@clerk/vue'
+import { clerkEnabled, useAuth, useI18n } from '@/composables'
 
 defineProps<{
   collapsed: boolean
@@ -16,7 +15,7 @@ try {
 const isLoaded = computed(() => auth?.isLoaded.value ?? true)
 const isSignedIn = computed(() => auth?.isSignedIn.value ?? false)
 const userName = computed(() => auth?.userName.value ?? '')
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 </script>
 
 <template>
@@ -30,17 +29,15 @@ const { t } = useI18n()
       </div>
     </template>
     <template v-else>
-      <SignInButton mode="modal">
-        <UButton
-          variant="ghost"
-          color="neutral"
-          block
-          :square="collapsed"
-          :label="collapsed ? undefined : t('auth.signIn')"
-          icon="i-lucide-log-in"
-          class="justify-start"
-        />
-      </SignInButton>
+      <UButton
+        to="/sign-in"
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-log-in"
+        class="w-full px-1.5"
+      >
+        {{ collapsed ? undefined : t('common.signIn') }}
+      </UButton>
     </template>
   </template>
   <div

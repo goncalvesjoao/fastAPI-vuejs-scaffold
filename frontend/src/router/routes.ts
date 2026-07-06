@@ -32,5 +32,9 @@ export const routes: RouteRecordRaw[] = [
   },
   { path: '/health', name: 'health', component: HealthPage },
   { path: '/sign-in', name: 'sign-in', component: SignInPage },
-  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/not-found.vue') },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('@/pages/not-found-page.vue'),
+  },
 ]

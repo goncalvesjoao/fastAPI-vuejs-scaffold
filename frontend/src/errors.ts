@@ -10,9 +10,9 @@ export type FieldErrorType = {
 
 export type FieldErrorsType = Record<string, FieldErrorType[]>
 
-export class ApiClientError extends Error {
+export class ApiError extends Error {
   static get defaultMessage(): string {
-    return translate('errors.unexpectedRequest')
+    return translate('errors.ApiError.defaultMessage')
   }
 
   httpStatus: number | undefined
@@ -20,7 +20,7 @@ export class ApiClientError extends Error {
   constructor(error: unknown) {
     super(error instanceof Error ? error.message : undefined, { cause: error })
 
-    const klass = this.constructor as typeof ApiClientError
+    const klass = this.constructor as typeof ApiError
     this.name = klass.name
 
     if (_isHttpResponseError(error)) {
@@ -35,21 +35,21 @@ export class ApiClientError extends Error {
   }
 }
 
-export class UnauthorizedApiClientError extends ApiClientError {
+export class UnauthorizedApiError extends ApiError {
   static get defaultMessage(): string {
-    return translate('errors.unauthorized')
+    return translate('errors.UnauthorizedApiError.defaultMessage')
   }
 }
 
-export class NotFoundApiClientError extends ApiClientError {
+export class NotFoundApiError extends ApiError {
   static get defaultMessage(): string {
-    return translate('errors.notFound')
+    return translate('errors.NotFoundApiError.defaultMessage')
   }
 }
 
-export class UnprocessableContentApiClientError extends ApiClientError {
+export class UnprocessableContentApiError extends ApiError {
   static get defaultMessage(): string {
-    return translate('errors.invalidFields')
+    return translate('errors.UnprocessableContentApiError.defaultMessage')
   }
 
   fieldErrors: FieldErrorsType = {}
@@ -80,35 +80,35 @@ export class UnprocessableContentApiClientError extends ApiClientError {
   }
 }
 
-export class InternalServerErrorApiClientError extends ApiClientError {
+export class InternalServerErrorApiError extends ApiError {
   static get defaultMessage(): string {
-    return translate('errors.internalServer')
+    return translate('errors.InternalServerErrorApiError.defaultMessage')
   }
 }
 
-export class BadGatewayApiClientError extends ApiClientError {
+export class BadGatewayApiError extends ApiError {
   static get defaultMessage(): string {
-    return translate('errors.unavailable')
+    return translate('errors.BadGatewayApiError.defaultMessage')
   }
 }
 
-export function apiClientErrorFactory(error: unknown): ApiClientError {
+export function apiClientErrorFactory(error: unknown): ApiError {
   if (_isHttpResponseError(error)) {
     switch (error.status) {
       case 401:
-        return new UnauthorizedApiClientError(error)
+        return new UnauthorizedApiError(error)
       case 404:
-        return new NotFoundApiClientError(error)
+        return new NotFoundApiError(error)
       case 422:
-        return new UnprocessableContentApiClientError(error)
+        return new UnprocessableContentApiError(error)
       case 500:
-        return new InternalServerErrorApiClientError(error)
+        return new InternalServerErrorApiError(error)
       case 502:
-        return new BadGatewayApiClientError(error)
+        return new BadGatewayApiError(error)
     }
   }
 
-  return new ApiClientError(error)
+  return new ApiError(error)
 }
 
 function _isHTTPErrorResponse(body: unknown): body is HTTPErrorResponse {

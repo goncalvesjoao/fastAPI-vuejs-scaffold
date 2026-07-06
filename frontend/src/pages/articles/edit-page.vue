@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import { useArticlesStore } from '@/stores'
 import { ArticleNatureEnum, type Article } from '@/entities'
-import { type FormErrorApi, useFormErrors, useEnums } from '@/composables'
+import { type FormErrorApi, useFormErrors, useEnums, useI18n } from '@/composables'
 
 const toast = useToast()
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 const route = useRoute()
 const router = useRouter()
 const articlesStore = useArticlesStore()
@@ -19,11 +18,11 @@ const article = ref<Article | undefined>(articlesStore.getById(articleId.value))
 const loading = ref(true)
 const loadError = ref<Error | undefined>(undefined)
 
-const updating = ref(false)
-const updateError = ref<Error | undefined>(undefined)
-const updateFormRef = ref<FormErrorApi>()
-const { clearFormErrors, setFormErrors } = useFormErrors(updateFormRef)
-const updateState = ref({
+const submitting = ref(false)
+const submitError = ref<Error | undefined>(undefined)
+const formRef = ref<FormErrorApi>()
+const { clearFormErrors, setFormErrors } = useFormErrors(formRef)
+const formState = ref({
   content: '',
   nature: ArticleNatureEnum.Standard,
 })
@@ -31,22 +30,22 @@ const updateState = ref({
 const deleteDialogOpen = ref(false)
 const renameModalOpen = ref(false)
 
-const isBusy = computed(() => loading.value || updating.value || article.value?.isBusy)
-const cannotUpdate = computed(() => isBusy.value || updateError.value !== undefined)
+const isBusy = computed(() => loading.value || submitting.value || article.value?.isBusy)
+const cannotSubmit = computed(() => isBusy.value || submitError.value !== undefined)
 
 async function handleSubmit() {
   if (!article.value) return
 
-  updating.value = true
-  updateError.value = undefined
+  submitting.value = true
+  submitError.value = undefined
   clearFormErrors()
 
   articlesStore
-    .updateById(article.value.id, updateState.value)
+    .updateById(article.value.id, formState.value)
     .then((result) => {
       if (result.ok) {
         toast.add({
-          title: t('articles.notifications.updated'),
+          title: t('.submitSuccessTitle'),
           icon: 'i-lucide-save-check',
           color: 'success',
         })
@@ -54,24 +53,24 @@ async function handleSubmit() {
         setFormErrors(result.fieldErrors)
 
         toast.add({
-          title: t('articles.errors.updateForm'),
-          description: t('articles.notifications.checkForm'),
+          title: t('.submitFailureTitle'),
+          description: t('common.formWithErrorsDescription'),
           icon: 'i-lucide-save-off',
           color: 'error',
         })
       }
     })
     .catch((error: unknown) => {
-      updateError.value = new Error(t('articles.errors.update'), {
+      submitError.value = new Error(t('.submitFailureTitle'), {
         cause: error,
       })
     })
-    .finally(() => (updating.value = false))
+    .finally(() => (submitting.value = false))
 }
 
 const dropdownItems = computed(() => [
   {
-    label: t('articles.rename'),
+    label: t('common.rename'),
     icon: 'i-lucide-pencil',
     disabled: isBusy.value,
     onSelect() {
@@ -108,7 +107,7 @@ watch(
       .loadById(id)
       .then((data) => (article.value = data))
       .catch((error: unknown) => {
-        loadError.value = new Error(t('articles.errors.load', { id: articleId.value }), {
+        loadError.value = new Error(t('.loadFailureMessage', { id: articleId.value }), {
           cause: error,
         })
       })
@@ -122,7 +121,7 @@ watch(
   (newArticle) => {
     if (!newArticle) return
 
-    updateState.value = {
+    formState.value = {
       content: newArticle.content ?? '',
       nature: newArticle.nature,
     }
@@ -151,7 +150,7 @@ watch(
           </UDropdownMenu>
         </div>
 
-        <h1 v-else>{{ t('articles.withId', { id: articleId }) }}</h1>
+        <h1 v-else>{{ t('.notFoundTitle', { id: articleId }) }}</h1>
 
         <template v-if="article" #extra-buttons>
           <UIcon
@@ -164,7 +163,7 @@ watch(
             variant="ghost"
             icon="i-lucide-circle-plus"
             class="lg:hidden"
-            :aria-label="t('navigation.newArticle')"
+            :aria-label="t('components.left-navbar.newArticle')"
             :to="{ name: 'new-article' }"
           />
         </template>
@@ -177,22 +176,22 @@ watch(
 
         <UForm
           v-else-if="article"
-          ref="updateFormRef"
+          ref="formRef"
           class="w-full space-y-4"
-          :state="updateState"
-          :disabled="cannotUpdate"
+          :state="formState"
+          :disabled="cannotSubmit"
           @submit="handleSubmit"
         >
-          <UnexpectedError v-if="updateError" :error="updateError" class="mx-auto" />
+          <UnexpectedError v-if="submitError" :error="submitError" class="mx-auto" />
 
           <template v-else>
-            <UFormField :label="t('common.content')" name="content">
-              <UTextarea v-model="updateState.content" class="w-full" />
+            <UFormField :label="t('entities.article.fields.content')" name="content">
+              <UTextarea v-model="formState.content" class="w-full" />
             </UFormField>
 
-            <UFormField :label="t('common.nature')" name="nature">
+            <UFormField :label="t('entities.article.fields.nature')" name="nature">
               <USelect
-                v-model="updateState.nature"
+                v-model="formState.nature"
                 :items="enumToSelectOptions(ArticleNatureEnum)"
                 class="w-full"
               />
@@ -205,10 +204,10 @@ watch(
               size="xl"
               icon="i-lucide-save"
               type="submit"
-              :disabled="cannotUpdate"
-              :loading="updating"
+              :disabled="cannotSubmit"
+              :loading="submitting"
             >
-              {{ t('articles.update') }}
+              {{ t('.submitLabel') }}
             </UButton>
           </template>
         </UForm>
@@ -222,8 +221,8 @@ watch(
             icon: 'size-11',
           }"
         >
-          <template #title>{{ t('articles.notFound') }}</template>
-          <template #description>{{ t('articles.notFoundDescription') }}</template>
+          <template #title>{{ t('.notFoundHeading') }}</template>
+          <template #description>{{ t('.notFoundDescription') }}</template>
         </UAlert>
       </div>
     </template>

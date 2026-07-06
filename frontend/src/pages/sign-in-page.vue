@@ -2,11 +2,10 @@
 import { SignIn } from '@clerk/vue'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { authBypassed, useAuth } from '@/composables/use-auth'
+import { authBypassed, useAuth, useI18n } from '@/composables'
 
 const router = useRouter()
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 
 if (authBypassed) router.push({ name: 'home' })
 
@@ -39,7 +38,9 @@ function checkAuthentication() {
 <template>
   <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
     <template #header>
-      <TopNavbar><h1>{{ t('auth.signIn') }}</h1></TopNavbar>
+      <TopNavbar
+        ><h1>{{ t('.title') }}</h1></TopNavbar
+      >
     </template>
 
     <template #body>

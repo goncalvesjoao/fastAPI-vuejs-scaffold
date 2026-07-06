@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/composables'
 
 defineProps<{
   loading: boolean
@@ -7,7 +7,7 @@ defineProps<{
   noText?: boolean
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 </script>
 
 <template>

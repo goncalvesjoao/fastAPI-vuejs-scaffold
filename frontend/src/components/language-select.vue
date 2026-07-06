@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { en, ja } from '@nuxt/ui/locale'
-import { useI18n } from 'vue-i18n'
-
 import { setLocale } from '@/i18n'
+import { useI18n } from '@/composables'
 
-const { locale, t } = useI18n()
+const { locale, t } = useI18n(import.meta.url)
 const locales = [en, ja]
 const selectedLocale = computed({
   get: () => locale.value,
@@ -18,7 +17,7 @@ const selectedLocale = computed({
     <ULocaleSelect
       v-model="selectedLocale"
       :locales="locales"
-      :aria-label="t('language.select')"
+      :aria-label="t('.select')"
       color="neutral"
       variant="ghost"
       class="size-8 justify-center p-1.5"

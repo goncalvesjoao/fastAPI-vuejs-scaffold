@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useErrorReporter } from '@/composables'
+import { useErrorReporter, useI18n } from '@/composables'
 import { apiClient } from '@/lib'
 
 const errorReporter = useErrorReporter()
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 const loading = ref(false)
 const loadError = ref<Error | undefined>(undefined)
 const apiOk = ref(false)
@@ -21,7 +20,7 @@ onMounted(() => {
       dbOk.value = data.database
     })
     .catch((error: unknown) => {
-      loadError.value = new Error(t('health.requestFailed'), { cause: error })
+      loadError.value = new Error(t('.loadFailureMessage'), { cause: error })
 
       errorReporter.capture(loadError.value)
     })
@@ -40,7 +39,9 @@ function color(status: boolean) {
 <template>
   <UDashboardPanel class="sm:px-5" :ui="{ body: 'sm:p-0' }">
     <template #header>
-      <TopNavbar><h1>{{ t('health.title') }}</h1></TopNavbar>
+      <TopNavbar
+        ><h1>{{ t('.title') }}</h1></TopNavbar
+      >
     </template>
 
     <template #body>
@@ -49,9 +50,9 @@ function color(status: boolean) {
 
         <div v-else class="w-fit mx-auto">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight">{{ t('health.heading') }}</h1>
+            <h1 class="text-2xl font-bold tracking-tight">{{ t('.heading') }}</h1>
             <p class="text-gray-500 dark:text-gray-400 mt-1">
-              {{ t('health.description') }}
+              {{ t('.description') }}
             </p>
           </div>
 
@@ -62,7 +63,7 @@ function color(status: boolean) {
 
                 <div class="text-center">
                   <UBadge :color="color(apiOk)" variant="subtle" size="lg">
-                    {{ loading ? t('health.checking') : apiOk ? t('health.up') : t('health.down') }}
+                    {{ loading ? t('.loading') : apiOk ? t('.up') : t('.down') }}
                   </UBadge>
                 </div>
               </div>
@@ -74,7 +75,7 @@ function color(status: boolean) {
 
                 <div class="text-center">
                   <UBadge :color="color(dbOk)" variant="subtle" size="lg">
-                    {{ loading ? t('health.checking') : dbOk ? t('health.up') : t('health.down') }}
+                    {{ loading ? t('.loading') : dbOk ? t('.up') : t('.down') }}
                   </UBadge>
                 </div>
               </div>

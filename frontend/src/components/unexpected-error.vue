@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/composables'
 import { settings } from '@/settings'
 
 const props = defineProps<{
@@ -10,11 +10,11 @@ const props = defineProps<{
   iconSize?: string
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 const defaultDescription = computed(() => {
   return settings.devMode
-    ? `🚧 ${props.error?.cause || t('errors.unknownCause')} 🚧`
-    : t('errors.supportNotified')
+    ? `🚧 ${props.error?.cause || t('.unknownCause')} 🚧`
+    : t('.supportNotified')
 })
 const description = computed(() => (props.error ? (props.description ?? defaultDescription) : ''))
 const icon = computed(() => (props.noIcon ? undefined : 'i-lucide-triangle-alert'))

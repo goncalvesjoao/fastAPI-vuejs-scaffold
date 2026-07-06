@@ -7,11 +7,7 @@ import {
 } from '@/entities'
 import { getAuthToken } from '@/composables/use-auth'
 import { currentLocale } from '@/i18n'
-import {
-  apiClientErrorFactory,
-  UnprocessableContentApiClientError,
-  type FieldErrorsType,
-} from './api-client-error'
+import { apiClientErrorFactory, UnprocessableContentApiError, type FieldErrorsType } from '@/errors'
 
 export type PaginatedRecordsType<T> = {
   page: number
@@ -100,7 +96,7 @@ export class ApiClient {
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)
 
-          if (apiError instanceof UnprocessableContentApiClientError) {
+          if (apiError instanceof UnprocessableContentApiError) {
             return resolve({ ok: false, fieldErrors: apiError.fieldErrors })
           }
 
@@ -120,7 +116,7 @@ export class ApiClient {
         .catch((error: unknown) => {
           const apiError = apiClientErrorFactory(error)
 
-          if (apiError instanceof UnprocessableContentApiClientError) {
+          if (apiError instanceof UnprocessableContentApiError) {
             return resolve({ ok: false, fieldErrors: apiError.fieldErrors })
           }
 

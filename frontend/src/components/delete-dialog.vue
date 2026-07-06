@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/composables'
 
 const props = defineProps<{
   resourceClassName: string
@@ -16,13 +16,13 @@ const emit = defineEmits<{
   confirm: []
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 const cannotDelete = computed(() => props.busy || props.deleting || props.error !== undefined)
-const title = computed(() => t('articles.deleteTitle', { resource: props.resourceClassName }))
+const title = computed(() => t('.title', { resource: props.resourceClassName }))
 const description = computed(() =>
   props.resourceName
-    ? t('articles.deleteNamedDescription', { name: props.resourceName })
-    : t('articles.deleteUnnamedDescription', { resource: props.resourceClassName }),
+    ? t('.description', { name: props.resourceName })
+    : t('.unnamedDescription', { resource: props.resourceClassName }),
 )
 
 function closeDialog() {
@@ -31,23 +31,13 @@ function closeDialog() {
 </script>
 
 <template>
-  <UModal
-    v-model:open="open"
-    :title="title"
-    :description="description"
-    :dismissible="!deleting"
-  >
+  <UModal v-model:open="open" :title="title" :description="description" :dismissible="!deleting">
     <template #body>
       <div class="space-y-4">
         <UnexpectedError v-if="error" :error="error" class="mx-auto" />
 
         <div v-if="!error" class="flex justify-end gap-2">
-          <UButton
-            type="button"
-            color="neutral"
-            variant="ghost"
-            @click="closeDialog"
-          >
+          <UButton type="button" color="neutral" variant="ghost" @click="closeDialog">
             {{ t('common.close') }}
           </UButton>
           <UButton

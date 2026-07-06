@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useArticlesStore } from '@/stores'
 import { Article } from '@/entities'
-import { type FormErrorApi, useFormErrors, useErrorReporter } from '@/composables'
+import { type FormErrorApi, useFormErrors, useErrorReporter, useI18n } from '@/composables'
 
 const toast = useToast()
-const { t } = useI18n()
+const { t } = useI18n(import.meta.url)
 const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
 
@@ -20,35 +19,35 @@ const emit = defineEmits<{
   done: []
 }>()
 
-const renameFormRef = ref<FormErrorApi>()
-const { clearFormErrors, setFormErrors } = useFormErrors(renameFormRef)
-const renameError = ref<Error | undefined>(undefined)
-const renameState = ref({ title: props.article.title })
-const renaming = ref(false)
-const cannotRename = computed(
-  () => props.article.isBusy || renaming.value || renameError.value !== undefined,
+const formRef = ref<FormErrorApi>()
+const formState = ref({ title: props.article.title })
+const { clearFormErrors, setFormErrors } = useFormErrors(formRef)
+const submitError = ref<Error | undefined>(undefined)
+const submitting = ref(false)
+const cannotSubmit = computed(
+  () => props.article.isBusy || submitting.value || submitError.value !== undefined,
 )
 
-function closeRenameModal() {
+function closeModal() {
   open.value = false
 }
 
-async function handleRename() {
-  if (cannotRename.value) return
+async function handleSubmit() {
+  if (cannotSubmit.value) return
 
-  renaming.value = true
+  submitting.value = true
   clearFormErrors()
-  renameError.value = undefined
+  submitError.value = undefined
 
   articlesStore
-    .updateById(props.article.id, renameState.value)
+    .updateById(props.article.id, formState.value)
     .then((result) => {
       if (result.ok) {
-        closeRenameModal()
+        closeModal()
         emit('done')
 
         toast.add({
-          title: t('articles.notifications.renamed'),
+          title: t('.submitSuccessTitle'),
           icon: 'i-lucide-save-check',
           color: 'success',
         })
@@ -56,23 +55,23 @@ async function handleRename() {
         setFormErrors(result.fieldErrors)
 
         toast.add({
-          title: t('articles.errors.renameForm'),
-          description: t('articles.notifications.checkForm'),
+          title: t('.submitFailureTitle'),
+          description: t('common.formWithErrorsDescription'),
           icon: 'i-lucide-save-off',
           color: 'error',
         })
       }
     })
     .catch((error: unknown) => {
-      renameError.value = new Error(t('articles.errors.rename'), {
+      submitError.value = new Error(t('.submitFailureTitle'), {
         cause: error,
       })
 
-      errorReporter.capture(renameError.value, {
+      errorReporter.capture(submitError.value, {
         articleId: props.article.id,
       })
     })
-    .finally(() => (renaming.value = false))
+    .finally(() => (submitting.value = false))
 }
 
 watch(
@@ -80,7 +79,7 @@ watch(
   (newArticle) => {
     if (!newArticle) return
 
-    renameState.value = {
+    formState.value = {
       title: newArticle.title,
     }
   },
@@ -88,30 +87,30 @@ watch(
 )
 watch(open, () => {
   clearFormErrors()
-  renameError.value = undefined
+  submitError.value = undefined
 })
 </script>
 
 <template>
   <UModal
     v-model:open="open"
-    :title="t('articles.renameTitle')"
-    :description="t('articles.renameDescription')"
-    :dismissible="!renaming"
+    :title="t('.title')"
+    :description="t('.description')"
+    :dismissible="!submitting"
   >
     <template #body>
-      <UnexpectedError v-if="renameError" :error="renameError" class="mx-auto" />
+      <UnexpectedError v-if="submitError" :error="submitError" class="mx-auto" />
 
       <UForm
         v-else
-        ref="renameFormRef"
+        ref="formRef"
         class="w-full space-y-4"
-        :state="renameState"
-        :disabled="cannotRename"
-        @submit="handleRename"
+        :state="formState"
+        :disabled="cannotSubmit"
+        @submit="handleSubmit"
       >
-        <UFormField :label="t('common.title')" name="title">
-          <UInput v-model="renameState.title" autofocus type="text" class="w-full" />
+        <UFormField :label="t('entities.article.fields.title')" name="title">
+          <UInput v-model="formState.title" autofocus type="text" class="w-full" />
         </UFormField>
 
         <div class="flex justify-end gap-2">
@@ -119,14 +118,14 @@ watch(open, () => {
             type="button"
             color="neutral"
             variant="ghost"
-            @click="closeRenameModal"
-            :disabled="renaming"
+            @click="closeModal"
+            :disabled="submitting"
           >
             {{ t('common.close') }}
           </UButton>
 
-          <UButton type="submit" :disabled="cannotRename" :loading="renaming">
-            {{ t('common.save') }}
+          <UButton type="submit" :disabled="cannotSubmit" :loading="submitting">
+            {{ t('.submitLabel') }}
           </UButton>
         </div>
       </UForm>

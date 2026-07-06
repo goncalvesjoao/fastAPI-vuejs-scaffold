@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
-import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores'
-import { useAuth, useErrorReporter } from '@/composables'
+import { useAuth, useErrorReporter, useI18n } from '@/composables'
 import { Article } from '@/entities'
 import { groupByDate } from '@/lib'
 
@@ -17,7 +16,7 @@ type SidebarArticleItem = NavigationMenuItem & {
 const articlesStore = useArticlesStore()
 const errorReporter = useErrorReporter()
 const { records } = storeToRefs(articlesStore)
-const { locale, t } = useI18n()
+const { locale, t } = useI18n(import.meta.url)
 
 let auth: ReturnType<typeof useAuth> | null = null
 try {
@@ -53,7 +52,9 @@ function loadRecords() {
     .loadAll()
     .then()
     .catch((error: unknown) => {
-      loadError.value = new Error(t('articles.errors.loadAll'), { cause: error })
+      loadError.value = new Error(t('.loadAllFailureMessage'), {
+        cause: error,
+      })
 
       errorReporter.capture(loadError.value)
     })
@@ -65,7 +66,7 @@ const sidebarItems = computed(() => {
 
   groupsRecords.forEach((groupCollection) => {
     items.push({
-      label: t(`navigation.dateGroups.${groupCollection.key}`, groupCollection.key),
+      label: t(`.dateGroups.${groupCollection.key}`, groupCollection.key),
       type: 'label' as const,
     })
 
@@ -108,7 +109,7 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
   return [
     [
       {
-        label: t('articles.rename'),
+        label: t('common.rename'),
         icon: 'i-lucide-pencil',
         onSelect: () => (articleToRename.value = article),
       },
@@ -148,10 +149,10 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
       <UNavigationMenu
         :items="[
           {
-            label: t('navigation.newArticle'),
-            'aria-label': t('navigation.newArticle'),
+            label: t('.newArticle'),
+            'aria-label': t('.newArticle'),
             icon: 'i-lucide-circle-plus',
-            tooltip: { text: t('navigation.newArticle') },
+            tooltip: { text: t('.newArticle') },
             ui: { linkLeadingIcon: 'size-5 shrink-0' },
             to: '/articles/new',
           },
@@ -182,7 +183,7 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
               variant="link"
               size="sm"
               class="rounded-[5px] hover:bg-accented/50 focus-visible:bg-accented/50 data-[state=open]:bg-accented/50"
-              :aria-label="t('navigation.articleActions')"
+              :aria-label="t('.articleActions')"
               tabindex="-1"
               @click.stop.prevent
             />
@@ -203,5 +204,9 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
     @done="$router.push({ name: 'new-article' })"
   />
 
-  <ArticleRenameModal v-if="articleToRename" v-model:open="renameModalOpen" :article="articleToRename" />
+  <ArticleRenameModal
+    v-if="articleToRename"
+    v-model:open="renameModalOpen"
+    :article="articleToRename"
+  />
 </template>

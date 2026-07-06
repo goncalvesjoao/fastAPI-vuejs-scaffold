@@ -1,14 +1,7 @@
 import { watch, shallowRef, type Ref } from 'vue'
 import type { FormError } from '@nuxt/ui'
 import { useI18n } from '@/composables/use-i18n'
-import type { FieldErrorsType } from '@/lib'
-
-export type ApiValidationIssue = {
-  name: string
-  type: string
-  context: Record<string, unknown>
-  fallbackMessage: string
-}
+import type { FieldErrorsType, FieldErrorType } from '@/lib'
 
 export type FormErrorApi = {
   clear(): void
@@ -18,7 +11,7 @@ export type FormErrorApi = {
 
 export function useFormErrors(formRef: Ref<FormErrorApi | null | undefined>) {
   const _fieldErrors = shallowRef<FieldErrorsType>({})
-  const { locale, translateFormError } = useI18n()
+  const { locale, t, te } = useI18n()
 
   function applyErrors(): void {
     const messagesByField = new Map<string, string[]>()
@@ -52,11 +45,37 @@ export function useFormErrors(formRef: Ref<FormErrorApi | null | undefined>) {
     formRef.value?.clear()
   }
 
+  function translateFormError(fieldPath: string, fieldError: FieldErrorType): string {
+    const localeKey = 'composables.useI18n.translateFormError.validations'
+
+    const fieldName = fieldPath
+      .split('.')
+      .filter((segment) => !/^\d+$/.test(segment))
+      .at(-1)
+    const keys = [
+      `${localeKey}.fields.${fieldName}.${fieldError.type}`,
+      fieldName && `${localeKey}.fields.${fieldName}.${fieldError.type}`,
+      `${localeKey}.${fieldError.type}`,
+    ].filter((key): key is string => Boolean(key))
+    const key = keys.find((candidate) => te(candidate, locale.value))
+
+    return key ? t(key, _asContext(fieldError.context)) : fieldError.message
+  }
+
   watch(formRef, applyErrors)
   watch(locale, applyErrors, { flush: 'post' })
 
   return {
     clearFormErrors,
     setFormErrors,
+    translateFormError,
   }
+}
+
+function _asContext(context: unknown): Record<string, unknown> {
+  if (context && typeof context === 'object' && !Array.isArray(context)) {
+    return context as Record<string, unknown>
+  }
+
+  return {}
 }

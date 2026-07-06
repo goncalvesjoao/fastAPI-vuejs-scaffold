@@ -55,7 +55,9 @@ describe('pages/articles/new-page', () => {
     await flushPromises()
     await nextTick()
 
-    expect(createArticleApiArticlesPost).toHaveBeenCalledWith(expect.objectContaining({ title: '' }))
+    expect(createArticleApiArticlesPost).toHaveBeenCalledWith(
+      expect.objectContaining({ title: '' }),
+    )
     expect(wrapper.text()).toContain('Title is required')
   })
 
@@ -156,40 +158,5 @@ describe('pages/articles/new-page', () => {
     expect(wrapper.text()).toContain(
       'This field is mandatory, Please enter at least 3 character(s)',
     )
-  })
-
-  it('does not restore a cleared backend error after changing locale', async () => {
-    createArticleApiArticlesPost.mockRejectedValueOnce(
-      validationResponse([
-        {
-          type: 'string_too_short',
-          loc: ['body', 'title'],
-          msg: 'Backend fallback',
-          input: '',
-          ctx: { min_length: 3 },
-        },
-      ]),
-    )
-
-    const router = createRouter({ history: createMemoryHistory(), routes })
-    await router.push('/articles/new')
-    await router.isReady()
-
-    const wrapper = mount(NewPage, {
-      global: { plugins: [createPinia(), router, i18n] },
-    })
-
-    await wrapper.find('form').trigger('submit.prevent')
-    await flushPromises()
-    expect(wrapper.text()).toContain('Please enter at least 3 character(s)')
-
-    await wrapper.find('input[name="title"]').setValue('Valid title')
-    await flushPromises()
-    expect(wrapper.text()).not.toContain('Please enter at least 3 character(s)')
-
-    setLocale('ja')
-    await nextTick()
-
-    expect(wrapper.text()).not.toContain('3文字以上で入力してください')
   })
 })

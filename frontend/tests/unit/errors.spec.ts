@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  ApiClientError,
-  BadGatewayApiClientError,
-  InternalServerErrorApiClientError,
-  NotFoundApiClientError,
-  UnauthorizedApiClientError,
-  UnprocessableContentApiClientError,
+  ApiError,
+  BadGatewayApiError,
+  InternalServerErrorApiError,
+  NotFoundApiError,
+  UnauthorizedApiError,
+  UnprocessableContentApiError,
   apiClientErrorFactory,
-} from '@/lib/api-client-error'
+} from '@/errors'
 import type { HTTPErrorResponse, HTTPValidationError, ValidationError } from '@/lib/openapi/Api'
 
 /**
@@ -32,53 +32,53 @@ function mockHttpResponse(status: number, body: HTTPErrorResponse | HTTPValidati
 }
 
 describe('apiClientErrorFactory — status dispatch', () => {
-  it('maps 401 → UnauthorizedApiClientError', () => {
+  it('maps 401 → UnauthorizedApiError', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(401, { detail: 'token expired' } satisfies HTTPErrorResponse),
     )
-    expect(e).toBeInstanceOf(UnauthorizedApiClientError)
+    expect(e).toBeInstanceOf(UnauthorizedApiError)
     expect(e.message).toBe('token expired')
     expect(e.httpStatus).toBe(401)
   })
 
-  it('maps 404 → NotFoundApiClientError', () => {
+  it('maps 404 → NotFoundApiError', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(404, { detail: 'not here' } satisfies HTTPErrorResponse),
     )
-    expect(e).toBeInstanceOf(NotFoundApiClientError)
+    expect(e).toBeInstanceOf(NotFoundApiError)
     expect(e.message).toBe('not here')
     expect(e.httpStatus).toBe(404)
   })
 
-  it('maps 422 → UnprocessableContentApiClientError', () => {
+  it('maps 422 → UnprocessableContentApiError', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(422, { detail: [] } satisfies HTTPValidationError),
     )
-    expect(e).toBeInstanceOf(UnprocessableContentApiClientError)
+    expect(e).toBeInstanceOf(UnprocessableContentApiError)
     expect(e.httpStatus).toBe(422)
   })
 
-  it('maps 500 → InternalServerErrorApiClientError', () => {
+  it('maps 500 → InternalServerErrorApiError', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(500, { detail: 'boom' } satisfies HTTPErrorResponse),
     )
-    expect(e).toBeInstanceOf(InternalServerErrorApiClientError)
+    expect(e).toBeInstanceOf(InternalServerErrorApiError)
     expect(e.httpStatus).toBe(500)
   })
 
-  it('maps 502 → BadGatewayApiClientError', () => {
+  it('maps 502 → BadGatewayApiError', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(502, { detail: 'upstream down' } satisfies HTTPErrorResponse),
     )
-    expect(e).toBeInstanceOf(BadGatewayApiClientError)
+    expect(e).toBeInstanceOf(BadGatewayApiError)
     expect(e.httpStatus).toBe(502)
   })
 
-  it('falls back to base ApiClientError for unmapped status codes', () => {
+  it('falls back to base ApiError for unmapped status codes', () => {
     const e = apiClientErrorFactory(
       mockHttpResponse(403, { detail: 'forbidden' } satisfies HTTPErrorResponse),
     )
-    expect(Object.getPrototypeOf(e)).toBe(ApiClientError.prototype)
+    expect(Object.getPrototypeOf(e)).toBe(ApiError.prototype)
     expect(e.message).toBe('forbidden')
     expect(e.httpStatus).toBe(403)
   })
@@ -91,10 +91,10 @@ describe('apiClientErrorFactory — status dispatch', () => {
 })
 
 describe('apiClientErrorFactory — non-HTTP errors (network/cancellation)', () => {
-  it('returns base ApiClientError when thrown value has no numeric .status', () => {
+  it('returns base ApiError when thrown value has no numeric .status', () => {
     const networkErr = new TypeError('Failed to fetch')
     const e = apiClientErrorFactory(networkErr)
-    expect(Object.getPrototypeOf(e)).toBe(ApiClientError.prototype)
+    expect(Object.getPrototypeOf(e)).toBe(ApiError.prototype)
   })
 
   it('preserves the original Error message for network/unknown errors', () => {
@@ -103,15 +103,15 @@ describe('apiClientErrorFactory — non-HTTP errors (network/cancellation)', () 
     expect(e.message).toBe('Failed to fetch')
   })
 
-  it('returns base ApiClientError for non-object thrown values', () => {
+  it('returns base ApiError for non-object thrown values', () => {
     const e = apiClientErrorFactory('a string was thrown')
-    expect(e).toBeInstanceOf(ApiClientError)
-    expect(e.message).toBe(ApiClientError.defaultMessage)
+    expect(e).toBeInstanceOf(ApiError)
+    expect(e.message).toBe(ApiError.defaultMessage)
   })
 
-  it('returns base ApiClientError when thrown value is null/undefined', () => {
-    expect(apiClientErrorFactory(null)).toBeInstanceOf(ApiClientError)
-    expect(apiClientErrorFactory(undefined)).toBeInstanceOf(ApiClientError)
+  it('returns base ApiError when thrown value is null/undefined', () => {
+    expect(apiClientErrorFactory(null)).toBeInstanceOf(ApiError)
+    expect(apiClientErrorFactory(undefined)).toBeInstanceOf(ApiError)
   })
 
   it('has undefined httpStatus for non-HTTP errors', () => {
@@ -120,37 +120,37 @@ describe('apiClientErrorFactory — non-HTTP errors (network/cancellation)', () 
   })
 })
 
-describe('ApiClientError constructor — message extraction', () => {
+describe('ApiError constructor — message extraction', () => {
   it('uses string `detail` from HTTPErrorResponse as the message', () => {
-    const e = new ApiClientError(
+    const e = new ApiError(
       mockHttpResponse(400, { detail: 'bad input' } satisfies HTTPErrorResponse),
     )
     expect(e.message).toBe('bad input')
   })
 
   it('falls back to defaultMessage when body has no `detail` field', () => {
-    const e = new NotFoundApiClientError(mockHttpResponse(404, { unrelated: true }))
-    expect(e.message).toBe(NotFoundApiClientError.defaultMessage)
+    const e = new NotFoundApiError(mockHttpResponse(404, { unrelated: true }))
+    expect(e.message).toBe(NotFoundApiError.defaultMessage)
   })
 
   it('uses subclass defaultMessage (not base) when no string detail is present', () => {
-    const e = new UnauthorizedApiClientError(
+    const e = new UnauthorizedApiError(
       mockHttpResponse(401, { detail: [] } satisfies HTTPValidationError),
     )
-    expect(e.message).toBe(UnauthorizedApiClientError.defaultMessage)
+    expect(e.message).toBe(UnauthorizedApiError.defaultMessage)
   })
 
   it('ignores non-string, non-array `detail` values', () => {
-    const e = new ApiClientError(mockHttpResponse(500, { detail: { weird: true } }))
-    expect(e.message).toBe(ApiClientError.defaultMessage)
+    const e = new ApiError(mockHttpResponse(500, { detail: { weird: true } }))
+    expect(e.message).toBe(ApiError.defaultMessage)
   })
 })
 
-describe('ApiClientError constructor — fieldErrors from HTTPValidationError', () => {
+describe('ApiError constructor — fieldErrors from HTTPValidationError', () => {
   it('parses a single validation error with a 2-segment loc', () => {
     // FastAPI emits loc: ["body", "title"] for a missing body field.
     // The full path including root is used as the key.
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -176,7 +176,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('builds a dotted path from nested loc segments', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -202,7 +202,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('preserves array indices in the dotted path', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -228,7 +228,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('distinguishes same leaf field under different parents', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -254,7 +254,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('distinguishes same field across different array indices', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -295,7 +295,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('accumulates multiple errors on the same field into an array', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -334,7 +334,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('aggregates multiple fields with multiple errors each', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -403,7 +403,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('uses root segment as key when loc has only one segment', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -429,7 +429,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('skips entries whose loc is empty or missing', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           { type: 'missing', loc: [], msg: 'no loc', input: {}, ctx: { min_length: 1 } },
@@ -446,7 +446,7 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('skips entries whose first loc segment is not a string', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, {
         detail: [
           {
@@ -463,36 +463,30 @@ describe('ApiClientError constructor — fieldErrors from HTTPValidationError', 
   })
 
   it('leaves fieldErrors empty when detail is an empty array', () => {
-    const e = new UnprocessableContentApiClientError(
+    const e = new UnprocessableContentApiError(
       mockHttpResponse(422, { detail: [] } satisfies HTTPValidationError),
     )
     expect(e.fieldErrors).toEqual({})
-    expect(e.message).toBe(UnprocessableContentApiClientError.defaultMessage)
+    expect(e.message).toBe(UnprocessableContentApiError.defaultMessage)
   })
 })
 
-describe('ApiClientError — Error basics', () => {
+describe('ApiError — Error basics', () => {
   it('sets name to the subclass name', () => {
-    expect(new UnauthorizedApiClientError(mockHttpResponse(401, {})).name).toBe(
-      'UnauthorizedApiClientError',
+    expect(new UnauthorizedApiError(mockHttpResponse(401, {})).name).toBe('UnauthorizedApiError')
+    expect(new NotFoundApiError(mockHttpResponse(404, {})).name).toBe('NotFoundApiError')
+    expect(new UnprocessableContentApiError(mockHttpResponse(422, {})).name).toBe(
+      'UnprocessableContentApiError',
     )
-    expect(new NotFoundApiClientError(mockHttpResponse(404, {})).name).toBe(
-      'NotFoundApiClientError',
+    expect(new InternalServerErrorApiError(mockHttpResponse(500, {})).name).toBe(
+      'InternalServerErrorApiError',
     )
-    expect(new UnprocessableContentApiClientError(mockHttpResponse(422, {})).name).toBe(
-      'UnprocessableContentApiClientError',
-    )
-    expect(new InternalServerErrorApiClientError(mockHttpResponse(500, {})).name).toBe(
-      'InternalServerErrorApiClientError',
-    )
-    expect(new BadGatewayApiClientError(mockHttpResponse(502, {})).name).toBe(
-      'BadGatewayApiClientError',
-    )
-    expect(new ApiClientError(mockHttpResponse(400, {})).name).toBe('ApiClientError')
+    expect(new BadGatewayApiError(mockHttpResponse(502, {})).name).toBe('BadGatewayApiError')
+    expect(new ApiError(mockHttpResponse(400, {})).name).toBe('ApiError')
   })
 
   it('is a real Error with a stack trace', () => {
-    const e = new ApiClientError(new Error('orig'))
+    const e = new ApiError(new Error('orig'))
     expect(e).toBeInstanceOf(Error)
     expect(typeof e.stack).toBe('string')
   })
