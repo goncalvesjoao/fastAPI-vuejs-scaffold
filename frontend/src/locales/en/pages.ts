@@ -10,17 +10,16 @@ export const pages = {
       submitSuccessTitle: 'Article updated',
       submitFailureTitle: 'Failed to update the Article',
       loadFailureMessage: 'Failed to get Article with ID #{id}',
-      notFoundTitle: 'Article with ID #{id}',
       notFoundHeading: 'Article not found',
       notFoundDescription: 'The requested Article does not exist',
     },
   },
   'sign-in-page': {
-    title: 'Log In',
+    navbarTitle: 'Log In',
   },
   'health-page': {
-    title: 'Health Check',
-    heading: 'System Health',
+    navbarTitle: 'Health Check',
+    title: 'System Health',
     description: 'Backend connectivity and service status',
     loading: 'Checking…',
     up: 'Up',
@@ -28,15 +27,20 @@ export const pages = {
     loadFailureMessage: 'Failed to request health status',
   },
   'home-page': {
-    title: 'Welcome!',
-    authenticatedPrompt: "Let's create some {action}",
-    signInPrompt: 'Please {action} before continuing',
+    navbarTitle: 'Welcome!',
     initializationFailed: 'Failed to initialize authentication module',
+    eyebrow: 'YOUR PERSONAL REPOSITORY',
+    title: 'Ready to take your knowledge base to the next level?',
+    description: {
+      authenticated: 'Create and manage your articles with ease.',
+      unauthenticated: 'Sign in to be able to create and manage your articles.',
+    },
+    actions: {
+      createNew: 'Create an Article',
+    },
   },
   'not-found-page': {
-    title: 'Oops! Page not found',
-    heading: '404 - Page Not Found',
+    title: 'Page Not Found',
     description: 'The page you are looking for does not exist or has been moved',
-    goBackHome: 'Go Back Home',
   },
 }

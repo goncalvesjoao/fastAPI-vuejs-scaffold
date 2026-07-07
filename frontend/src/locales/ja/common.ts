@@ -7,4 +7,6 @@ export const common = {
   formWithErrorsDescription: '入力内容を確認してください',
   noName: '名前なし',
   signIn: 'ログイン',
+  goBackHome: 'ホームに戻る',
+  newArticle: '新しい記事',
 }

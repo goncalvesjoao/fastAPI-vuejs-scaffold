@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { authBypassed, useAuth, useErrorReporter, useI18n } from '@/composables'
-
-if (authBypassed) checkAuthentication()
 
 const errorReporter = useErrorReporter()
 const { t } = useI18n(import.meta.url)
@@ -10,8 +8,16 @@ let auth: ReturnType<typeof useAuth> | null = null
 const authStatus = ref('unconfirmed')
 const authError = ref<Error | undefined>(undefined)
 
+const primaryAction = computed(() =>
+  authStatus.value === 'authenticated'
+    ? { label: t('.actions.createNew'), to: { name: 'new-article' } }
+    : { label: t('common.signIn'), to: { name: 'sign-in' } },
+)
+
 try {
   auth = useAuth()
+
+  if (authBypassed) checkAuthentication()
 
   if (auth.isLoaded.value) {
     checkAuthentication()
@@ -36,43 +42,48 @@ async function checkAuthentication() {
 </script>
 
 <template>
-  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
-    <template #header>
-      <TopNavbar
-        ><h1>{{ t('.title') }}</h1></TopNavbar
-      >
+  <DashboardPanel>
+    <template #header-left>
+      <h2 class="font-medium text-default">{{ t('.navbarTitle') }}</h2>
     </template>
 
     <template #body>
-      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
-        <UnexpectedError v-if="authError" :error="authError" class="mx-auto" />
+      <ContainerPanel :blur-header-on="!authError">
+        <ErrorPanel v-if="authError" :error="authError" :noButton="true" />
 
         <div v-else class="mx-auto">
           <LoadingSpinner :loading="authStatus === 'unconfirmed'" />
 
-          <i18n-t
-            v-if="authStatus === 'unauthenticated'"
-            keypath="pages.home-page.signInPrompt"
-            tag="section"
-          >
-            <template #action>
-              <UButton :to="{ name: 'sign-in' }">{{ t('common.signIn') }}</UButton>
-            </template>
-          </i18n-t>
+          <section>
+            <p class="text-primary text-xs font-semibold tracking-widest">
+              {{ t('.eyebrow') }}
+            </p>
 
-          <i18n-t
-            v-else-if="authStatus === 'authenticated'"
-            keypath="pages.home-page.authenticatedPrompt"
-            tag="section"
-          >
-            <template #action>
-              <UButton :to="{ name: 'new-article' }">{{
-                t('pages.articles.new-page.submitLabel')
-              }}</UButton>
-            </template>
-          </i18n-t>
+            <h2
+              class="mt-4 tracking-tighter text-4xl sm:text-5xl font-bold text-highlighted text-balance"
+            >
+              {{ t('.title') }}
+            </h2>
+
+            <p class="mt-4 text-lg text-muted text-balance">
+              {{
+                authStatus === 'authenticated'
+                  ? t('.description.authenticated')
+                  : t('.description.unauthenticated')
+              }}
+            </p>
+
+            <UButton
+              :to="{ name: 'new-article' }"
+              size="xl"
+              icon="i-lucide-plus"
+              class="mt-4 px-6 justify-center"
+            >
+              {{ primaryAction.label }}
+            </UButton>
+          </section>
         </div>
-      </UContainer>
+      </ContainerPanel>
     </template>
-  </UDashboardPanel>
+  </DashboardPanel>
 </template>

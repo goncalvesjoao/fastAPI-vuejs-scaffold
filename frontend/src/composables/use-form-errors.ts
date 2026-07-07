@@ -1,7 +1,7 @@
 import { watch, shallowRef, type Ref } from 'vue'
 import type { FormError } from '@nuxt/ui'
 import { useI18n } from '@/composables/use-i18n'
-import type { FieldErrorsType, FieldErrorType } from '@/lib'
+import type { FieldErrorsType, FieldErrorType } from '@/errors'
 
 export type FormErrorApi = {
   clear(): void

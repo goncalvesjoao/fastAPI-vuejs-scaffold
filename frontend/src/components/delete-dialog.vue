@@ -34,7 +34,7 @@ function closeDialog() {
   <UModal v-model:open="open" :title="title" :description="description" :dismissible="!deleting">
     <template #body>
       <div class="space-y-4">
-        <UnexpectedError v-if="error" :error="error" class="mx-auto" />
+        <ErrorAlert v-if="error" :error="error" class="mx-auto" />
 
         <div v-if="!error" class="flex justify-end gap-2">
           <UButton type="button" color="neutral" variant="ghost" @click="closeDialog">

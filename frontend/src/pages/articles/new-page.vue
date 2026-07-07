@@ -69,15 +69,13 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
-    <template #header>
-      <TopNavbar
-        ><h1>{{ t('.submitLabel') }}</h1></TopNavbar
-      >
+  <DashboardPanel>
+    <template #header-left>
+      <h2 class="font-medium text-default">{{ t('.submitLabel') }}</h2>
     </template>
 
     <template #body>
-      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
+      <ContainerPanel>
         <UForm
           ref="createFormRef"
           class="w-full space-y-4"
@@ -85,7 +83,7 @@ async function handleSubmit() {
           :disabled="cannotSubmit"
           @submit="handleSubmit"
         >
-          <UnexpectedError v-if="submitError" :error="submitError" class="mx-auto" />
+          <ErrorPanel v-if="submitError" :error="submitError" />
 
           <template v-else>
             <UFormField :label="t('entities.article.fields.title')" name="title">
@@ -118,7 +116,7 @@ async function handleSubmit() {
             </UButton>
           </template>
         </UForm>
-      </UContainer>
+      </ContainerPanel>
     </template>
-  </UDashboardPanel>
+  </DashboardPanel>
 </template>

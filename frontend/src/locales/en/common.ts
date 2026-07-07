@@ -7,4 +7,6 @@ export const common = {
   formWithErrorsDescription: 'Please check the form for errors',
   noName: 'No Name',
   signIn: 'Sign In',
+  goBackHome: 'Go Back Home',
+  newArticle: 'New Article',
 }

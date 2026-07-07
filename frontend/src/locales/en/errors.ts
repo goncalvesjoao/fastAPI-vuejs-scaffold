@@ -1,4 +1,7 @@
 export const errors = {
+  unexpectedError: 'Unexpected error',
+  unknownCause: 'Unknown cause',
+  supportNotified: 'Support has been notified. Please try again later',
   ApiError: {
     defaultMessage: 'An unexpected error occurred while processing the request',
   },

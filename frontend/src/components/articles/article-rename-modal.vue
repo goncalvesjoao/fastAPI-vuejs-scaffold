@@ -99,7 +99,7 @@ watch(open, () => {
     :dismissible="!submitting"
   >
     <template #body>
-      <UnexpectedError v-if="submitError" :error="submitError" class="mx-auto" />
+      <ErrorAlert v-if="submitError" :error="submitError" class="mx-auto" />
 
       <UForm
         v-else

@@ -128,51 +128,48 @@ watch(
   },
   { immediate: true },
 )
+
+const blurHeaderOn = computed(() => (loadError.value ? false : article.value !== undefined))
 </script>
 
 <template>
-  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
-    <template #header>
-      <TopNavbar>
-        <div v-if="article" class="flex items-center gap-2 min-w-0">
-          <UDropdownMenu :items="dropdownItems" :content="{ align: 'start' }">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              :label="article.title"
-              trailing-icon="i-lucide-chevron-down"
-              class="min-w-0 text-md max-w-70 data-[state=open]:bg-elevated"
-              :ui="{
-                trailingIcon:
-                  'text-dimmed shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200',
-              }"
-            />
-          </UDropdownMenu>
-        </div>
-
-        <h1 v-else>{{ t('.notFoundTitle', { id: articleId }) }}</h1>
-
-        <template v-if="article" #extra-buttons>
-          <UIcon
-            :name="article.busyIcon"
-            :class="`lg:hidden size-5 mr-2 ${article.busyCssClass}`"
-          />
-
+  <DashboardPanel>
+    <template #header-left>
+      <div v-if="article" class="flex items-center gap-2 min-w-0">
+        <UDropdownMenu :items="dropdownItems" :content="{ align: 'start' }">
           <UButton
             color="neutral"
             variant="ghost"
-            icon="i-lucide-circle-plus"
-            class="lg:hidden"
-            :aria-label="t('components.left-navbar.newArticle')"
-            :to="{ name: 'new-article' }"
+            :label="article.title"
+            trailing-icon="i-lucide-chevron-down"
+            class="min-w-0 text-md max-w-70 data-[state=open]:bg-elevated"
+            :ui="{
+              trailingIcon:
+                'text-dimmed shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200',
+            }"
           />
-        </template>
-      </TopNavbar>
+        </UDropdownMenu>
+      </div>
+
+      <h2 v-else class="font-medium text-default">{{ t('.notFoundHeading') }}</h2>
+    </template>
+
+    <template v-if="article" #header-right>
+      <UIcon :name="article.busyIcon" :class="`lg:hidden size-5 mr-2 ${article.busyCssClass}`" />
+
+      <UButton
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-circle-plus"
+        class="lg:hidden"
+        :aria-label="t('common.newArticle')"
+        :to="{ name: 'new-article' }"
+      />
     </template>
 
     <template #body>
-      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
-        <UnexpectedError v-if="loadError" :error="loadError" class="mx-auto" />
+      <ContainerPanel :blurHeaderOn="blurHeaderOn">
+        <ErrorPanel v-if="loadError" :error="loadError" />
 
         <UForm
           v-else-if="article"
@@ -182,7 +179,7 @@ watch(
           :disabled="cannotSubmit"
           @submit="handleSubmit"
         >
-          <UnexpectedError v-if="submitError" :error="submitError" class="mx-auto" />
+          <ErrorPanel v-if="submitError" :error="submitError" />
 
           <template v-else>
             <UFormField :label="t('entities.article.fields.content')" name="content">
@@ -212,21 +209,15 @@ watch(
           </template>
         </UForm>
 
-        <UAlert
+        <ErrorPanel
           v-else
-          icon="i-lucide-circle-alert"
-          color="warning"
-          variant="subtle"
-          :ui="{
-            icon: 'size-11',
-          }"
-        >
-          <template #title>{{ t('.notFoundHeading') }}</template>
-          <template #description>{{ t('.notFoundDescription') }}</template>
-        </UAlert>
-      </UContainer>
+          icon="i-lucide-file-x"
+          :title="t('.notFoundHeading')"
+          :description="t('.notFoundDescription')"
+        />
+      </ContainerPanel>
     </template>
-  </UDashboardPanel>
+  </DashboardPanel>
 
   <ArticleDeleteDialog
     v-if="article"

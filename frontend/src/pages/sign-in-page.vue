@@ -36,21 +36,19 @@ function checkAuthentication() {
 </script>
 
 <template>
-  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
-    <template #header>
-      <TopNavbar
-        ><h1>{{ t('.title') }}</h1></TopNavbar
-      >
+  <DashboardPanel>
+    <template #header-left>
+      <h2 class="font-medium text-default">{{ t('.navbarTitle') }}</h2>
     </template>
 
     <template #body>
-      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
+      <ContainerPanel>
         <LoadingSpinner :loading="loading" />
 
         <div v-if="!loading" class="w-fit mx-auto">
           <SignIn />
         </div>
-      </UContainer>
+      </ContainerPanel>
     </template>
-  </UDashboardPanel>
+  </DashboardPanel>
 </template>

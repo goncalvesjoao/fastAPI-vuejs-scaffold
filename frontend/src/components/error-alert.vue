@@ -13,8 +13,8 @@ const props = defineProps<{
 const { t } = useI18n(import.meta.url)
 const defaultDescription = computed(() => {
   return settings.devMode
-    ? `🚧 ${props.error?.cause || t('.unknownCause')} 🚧`
-    : t('.supportNotified')
+    ? `🚧 ${props.error?.cause || t('errors.unknownCause')} 🚧`
+    : t('errors.supportNotified')
 })
 const description = computed(() => (props.error ? (props.description ?? defaultDescription) : ''))
 const icon = computed(() => (props.noIcon ? undefined : 'i-lucide-triangle-alert'))

@@ -3,9 +3,10 @@ import { computed, ref, watch, onMounted } from 'vue'
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores'
-import { useAuth, useErrorReporter, useI18n } from '@/composables'
+import { clerkEnabled, useAuth, useErrorReporter, useI18n } from '@/composables'
 import { Article } from '@/entities'
 import { groupByDate } from '@/lib'
+import { UserButton } from '@clerk/vue'
 
 type SidebarArticleItem = NavigationMenuItem & {
   slot: 'article'
@@ -23,8 +24,10 @@ try {
   auth = useAuth()
 } catch {}
 
-const isSignedIn = computed(() => auth?.isSignedIn.value ?? false)
 const sidebarOpen = ref(true)
+const isSignedIn = computed(() => auth?.isSignedIn.value ?? false)
+const authLoaded = computed(() => auth?.isLoaded.value ?? true)
+const userName = computed(() => auth?.userName.value ?? '')
 
 const loading = ref(false)
 const loadError = ref<Error | undefined>(undefined)
@@ -149,10 +152,10 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
       <UNavigationMenu
         :items="[
           {
-            label: t('.newArticle'),
-            'aria-label': t('.newArticle'),
+            label: t('common.newArticle'),
+            'aria-label': t('common.newArticle'),
             icon: 'i-lucide-circle-plus',
-            tooltip: { text: t('.newArticle') },
+            tooltip: { text: t('common.newArticle') },
             ui: { linkLeadingIcon: 'size-5 shrink-0' },
             to: '/articles/new',
           },
@@ -161,7 +164,7 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
         orientation="vertical"
       />
 
-      <UnexpectedError v-if="loadError" description="" :error="loadError" />
+      <ErrorAlert v-if="loadError" description="" :error="loadError" />
 
       <UNavigationMenu
         v-else-if="isSignedIn"
@@ -193,7 +196,36 @@ function getArticleActions(article: Article): DropdownMenuItem[][] {
     </template>
 
     <template #footer="{ collapsed }">
-      <AuthActions :collapsed="collapsed" />
+      <template v-if="clerkEnabled && authLoaded">
+        <template v-if="isSignedIn">
+          <div class="flex items-center px-1" :class="collapsed ? 'justify-center' : 'gap-2'">
+            <UserButton />
+            <span v-if="!collapsed" class="text-sm text-dimmed truncate">
+              {{ userName }}
+            </span>
+          </div>
+        </template>
+        <template v-else>
+          <UButton
+            to="/sign-in"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-log-in"
+            class="w-full px-1.5"
+          >
+            {{ collapsed ? undefined : t('common.signIn') }}
+          </UButton>
+        </template>
+      </template>
+
+      <div
+        v-else-if="clerkEnabled"
+        class="flex items-center gap-2"
+        :class="collapsed ? 'justify-center' : ''"
+      >
+        <USkeleton class="size-8 rounded-full shrink-0" />
+        <USkeleton v-if="!collapsed" class="h-4 w-24" />
+      </div>
     </template>
   </UDashboardSidebar>
 

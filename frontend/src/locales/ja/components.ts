@@ -23,22 +23,19 @@ export const components = {
       submitFailureTitle: '記事名の変更に失敗しました',
     },
   },
-  'language-select': {
-    select: '言語を選択',
-  },
-  'left-navbar': {
-    newArticle: '新しい記事',
-    articleActions: '記事の操作',
-    loadAllFailureMessage: '記事の取得に失敗しました',
-    dateGroups: {
-      today: '今日',
-      yesterday: '昨日',
-      lastWeek: '過去1週間',
-      lastMonth: '過去1か月',
+  layout: {
+    'left-navbar': {
+      articleActions: '記事の操作',
+      loadAllFailureMessage: '記事の取得に失敗しました',
+      dateGroups: {
+        today: '今日',
+        yesterday: '昨日',
+        lastWeek: '過去1週間',
+        lastMonth: '過去1か月',
+      },
     },
   },
-  'unexpected-error': {
-    unknownCause: '原因不明です',
-    supportNotified: 'サポートに通知しました。しばらくしてからもう一度お試しください',
+  'dashboard-panel': {
+    selectLanguage: '言語を選択',
   },
 }

@@ -16,11 +16,7 @@ const nuxtUiLocale = computed(() => (locale.value === 'ja' ? ja : en))
     <UDashboardGroup unit="rem">
       <LeftNavbar />
 
-      <div
-        class="flex-1 flex m-4 lg:ml-0 rounded-lg ring ring-default bg-default/75 shadow min-w-0 overflow-hidden"
-      >
-        <RouterView />
-      </div>
+      <RouterView />
     </UDashboardGroup>
   </UApp>
 </template>

@@ -25,22 +25,19 @@ export const components = {
       submitFailureTitle: 'Failed to rename the Article',
     },
   },
-  'language-select': {
-    select: 'Select language',
-  },
-  'left-navbar': {
-    newArticle: 'New Article',
-    articleActions: 'Article actions',
-    loadAllFailureMessage: 'Failed to fetch Articles',
-    dateGroups: {
-      today: 'Today',
-      yesterday: 'Yesterday',
-      lastWeek: 'Last Week',
-      lastMonth: 'Last Month',
+  layout: {
+    'left-navbar': {
+      articleActions: 'Article actions',
+      loadAllFailureMessage: 'Failed to fetch Articles',
+      dateGroups: {
+        today: 'Today',
+        yesterday: 'Yesterday',
+        lastWeek: 'Last Week',
+        lastMonth: 'Last Month',
+      },
     },
   },
-  'unexpected-error': {
-    unknownCause: 'Unknown cause',
-    supportNotified: 'Support has been notified. Please try again later',
+  'dashboard-panel': {
+    selectLanguage: 'Select language',
   },
 }

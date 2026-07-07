@@ -1,4 +1,6 @@
 export const errors = {
+  unknownCause: '原因不明です',
+  supportNotified: 'サポートに通知しました。しばらくしてからもう一度お試しください',
   ApiError: {
     defaultMessage: 'リクエストの処理中に予期しないエラーが発生しました',
   },

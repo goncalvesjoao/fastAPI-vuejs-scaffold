@@ -37,20 +37,21 @@ function color(status: boolean) {
 </script>
 
 <template>
-  <UDashboardPanel class="min-h-0 sm:px-3" :ui="{ body: 'sm:p-0' }">
-    <template #header>
-      <TopNavbar
-        ><h1>{{ t('.title') }}</h1></TopNavbar
-      >
+  <DashboardPanel>
+    <template #header-left>
+      <h2 class="font-medium text-default">{{ t('.navbarTitle') }}</h2>
     </template>
 
     <template #body>
-      <UContainer class="flex-1 flex flex-col gap-4 sm:gap-6 py-4 sm:py-6">
-        <UnexpectedError v-if="loadError" :error="loadError" class="mx-auto" />
+      <ContainerPanel
+        :blurHeaderOn="false"
+        class="items-center text-center justify-center gap-2 sm:gap-2"
+      >
+        <ErrorPanel v-if="loadError" :error="loadError" />
 
         <div v-else class="w-fit mx-auto">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight">{{ t('.heading') }}</h1>
+            <h1 class="text-2xl font-bold tracking-tight">{{ t('.title') }}</h1>
             <p class="text-gray-500 dark:text-gray-400 mt-1">
               {{ t('.description') }}
             </p>
@@ -82,7 +83,7 @@ function color(status: boolean) {
             </UCard>
           </div>
         </div>
-      </UContainer>
+      </ContainerPanel>
     </template>
-  </UDashboardPanel>
+  </DashboardPanel>
 </template>
