@@ -12,9 +12,7 @@ const props = withDefaults(
 )
 
 const cssClass = computed(() => {
-  const baseClass = 'relative flex-1 flex flex-col gap-4 sm:gap-6 pt-0 sm:pt-0 pb-2 sm:pb-3'
-
-  return props.class ? `${baseClass} ${props.class}` : baseClass
+  return props.class ?? 'relative flex-1 flex flex-col gap-4 sm:gap-6 pt-0 sm:pt-0 pb-2 sm:pb-3'
 })
 </script>
 

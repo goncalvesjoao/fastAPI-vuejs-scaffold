@@ -39,9 +39,9 @@ const description = computed(() =>
 <template>
   <ContainerPanel
     :blurHeaderOn="false"
-    class="items-center text-center justify-center gap-2 sm:gap-2"
+    class="relative flex-1 flex flex-col items-center text-center justify-center gap-2 sm:gap-2"
   >
-    <div v-if="icon" class="mb-2 flex items-center justify-center">
+    <div v-if="icon" class="flex items-center justify-center">
       <UIcon :name="icon" :class="`size-10 shrink-0 text-${errorColor}`" />
     </div>
 
@@ -53,7 +53,7 @@ const description = computed(() =>
 
     <p v-if="description" class="mt-2 text-lg text-muted text-balance">{{ description }}</p>
 
-    <div v-if="props.noButton !== true" class="mt-8 flex items-center justify-center gap-6">
+    <div v-if="props.noButton !== true" class="mt-6 flex items-center justify-center gap-6">
       <UButton v-if="!$slots.default" :to="{ name: 'home' }" color="primary">{{
         t('common.goBackHome')
       }}</UButton>
