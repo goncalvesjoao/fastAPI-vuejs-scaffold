@@ -75,7 +75,9 @@ async function handleSubmit() {
     </template>
 
     <template #body>
-      <ContainerPanel>
+      <ErrorPanel v-if="submitError" :error="submitError" />
+
+      <ContainerPanel v-else>
         <UForm
           ref="createFormRef"
           class="w-full space-y-4"
@@ -83,38 +85,34 @@ async function handleSubmit() {
           :disabled="cannotSubmit"
           @submit="handleSubmit"
         >
-          <ErrorPanel v-if="submitError" :error="submitError" />
+          <UFormField :label="t('entities.article.fields.title')" name="title">
+            <UInput v-model="formState.title" type="text" class="w-full" />
+          </UFormField>
 
-          <template v-else>
-            <UFormField :label="t('entities.article.fields.title')" name="title">
-              <UInput v-model="formState.title" type="text" class="w-full" />
-            </UFormField>
+          <UFormField :label="t('entities.article.fields.content')" name="content">
+            <UTextarea v-model="formState.content" class="w-full" />
+          </UFormField>
 
-            <UFormField :label="t('entities.article.fields.content')" name="content">
-              <UTextarea v-model="formState.content" class="w-full" />
-            </UFormField>
+          <UFormField :label="t('entities.article.fields.nature')" name="nature">
+            <USelect
+              v-model="formState.nature"
+              :items="enumToSelectOptions(ArticleNatureEnum)"
+              class="w-full"
+            />
+          </UFormField>
 
-            <UFormField :label="t('entities.article.fields.nature')" name="nature">
-              <USelect
-                v-model="formState.nature"
-                :items="enumToSelectOptions(ArticleNatureEnum)"
-                class="w-full"
-              />
-            </UFormField>
-
-            <UButton
-              block
-              class="justify-center w-full mt-4"
-              color="primary"
-              size="xl"
-              icon="i-lucide-circle-plus"
-              type="submit"
-              :disabled="cannotSubmit"
-              :loading="submitting"
-            >
-              {{ t('.submitLabel') }}
-            </UButton>
-          </template>
+          <UButton
+            block
+            class="justify-center w-full mt-4"
+            color="primary"
+            size="xl"
+            icon="i-lucide-circle-plus"
+            type="submit"
+            :disabled="cannotSubmit"
+            :loading="submitting"
+          >
+            {{ t('.submitLabel') }}
+          </UButton>
         </UForm>
       </ContainerPanel>
     </template>

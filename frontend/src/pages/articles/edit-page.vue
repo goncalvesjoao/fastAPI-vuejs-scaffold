@@ -128,8 +128,6 @@ watch(
   },
   { immediate: true },
 )
-
-const blurHeaderOn = computed(() => (loadError.value ? false : article.value !== undefined))
 </script>
 
 <template>
@@ -168,53 +166,50 @@ const blurHeaderOn = computed(() => (loadError.value ? false : article.value !==
     </template>
 
     <template #body>
-      <ContainerPanel :blurHeaderOn="blurHeaderOn">
-        <ErrorPanel v-if="loadError" :error="loadError" />
+      <ErrorPanel v-if="loadError" :error="loadError" />
 
+      <ErrorPanel v-else-if="submitError" :error="submitError" />
+
+      <ErrorPanel
+        v-else-if="!article"
+        icon="i-lucide-file-x"
+        :title="t('.notFoundHeading')"
+        :description="t('.notFoundDescription')"
+      />
+
+      <ContainerPanel v-else>
         <UForm
-          v-else-if="article"
           ref="formRef"
           class="w-full space-y-4"
           :state="formState"
           :disabled="cannotSubmit"
           @submit="handleSubmit"
         >
-          <ErrorPanel v-if="submitError" :error="submitError" />
+          <UFormField :label="t('entities.article.fields.content')" name="content">
+            <UTextarea v-model="formState.content" class="w-full" />
+          </UFormField>
 
-          <template v-else>
-            <UFormField :label="t('entities.article.fields.content')" name="content">
-              <UTextarea v-model="formState.content" class="w-full" />
-            </UFormField>
+          <UFormField :label="t('entities.article.fields.nature')" name="nature">
+            <USelect
+              v-model="formState.nature"
+              :items="enumToSelectOptions(ArticleNatureEnum)"
+              class="w-full"
+            />
+          </UFormField>
 
-            <UFormField :label="t('entities.article.fields.nature')" name="nature">
-              <USelect
-                v-model="formState.nature"
-                :items="enumToSelectOptions(ArticleNatureEnum)"
-                class="w-full"
-              />
-            </UFormField>
-
-            <UButton
-              block
-              class="justify-center w-full mt-4"
-              color="primary"
-              size="xl"
-              icon="i-lucide-save"
-              type="submit"
-              :disabled="cannotSubmit"
-              :loading="submitting"
-            >
-              {{ t('.submitLabel') }}
-            </UButton>
-          </template>
+          <UButton
+            block
+            class="justify-center w-full mt-4"
+            color="primary"
+            size="xl"
+            icon="i-lucide-save"
+            type="submit"
+            :disabled="cannotSubmit"
+            :loading="submitting"
+          >
+            {{ t('.submitLabel') }}
+          </UButton>
         </UForm>
-
-        <ErrorPanel
-          v-else
-          icon="i-lucide-file-x"
-          :title="t('.notFoundHeading')"
-          :description="t('.notFoundDescription')"
-        />
       </ContainerPanel>
     </template>
   </DashboardPanel>

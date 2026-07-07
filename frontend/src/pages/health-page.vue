@@ -43,13 +43,12 @@ function color(status: boolean) {
     </template>
 
     <template #body>
-      <ContainerPanel
-        :blurHeaderOn="false"
-        class="items-center text-center justify-center gap-2 sm:gap-2"
-      >
-        <ErrorPanel v-if="loadError" :error="loadError" />
+      <ErrorPanel v-if="loadError" :error="loadError" />
 
-        <div v-else class="w-fit mx-auto">
+      <ContainerPanel v-else :blurHeaderOn="false">
+        <div
+          class="w-fit mx-auto flex flex-col flex-1 items-center text-center justify-center gap-2 sm:gap-2"
+        >
           <div>
             <h1 class="text-2xl font-bold tracking-tight">{{ t('.title') }}</h1>
             <p class="text-gray-500 dark:text-gray-400 mt-1">
