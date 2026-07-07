@@ -118,6 +118,8 @@ npm run test:e2e -- --project=chromium
 npm run test:e2e -- tests/example.spec.ts
 # Runs the tests in debug mode
 npm run test:e2e -- --debug
+# Runs the tests with the Playwright UI
+npm run test:e2e -- --ui
 ```
 
 ## Continuous Integration

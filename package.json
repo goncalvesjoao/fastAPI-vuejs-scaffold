@@ -11,6 +11,7 @@
     "check": "npm run backend:check && npm run frontend:check",
     "test": "npm run backend:test; npm run frontend:test",
     "test:e2e": "playwright test",
+    "db:seed:e2e-data": "cd backend && .venv/bin/python scripts/db/seed/e2e_data.py",
     "backend:start": "cd backend && .venv/bin/python -m your_project_name.app",
     "backend:generate:openapi": "cd backend && .venv/bin/python scripts/generate_openapi.py",
     "backend:dev": "cd backend && ENVIRONMENT=development .venv/bin/python -m your_project_name.app",

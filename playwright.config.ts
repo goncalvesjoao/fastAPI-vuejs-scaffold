@@ -1,20 +1,25 @@
-import "dotenv/config";
-import process from "node:process";
+import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
+const backendPort = 8010;
+const frontendPort = 5183;
+const databasePath = path.resolve("test-results/database.db");
+const environment = {
+  BACKEND_PORT: String(backendPort),
+  FRONTEND_PORT: String(frontendPort),
+  DATABASE_URL: `sqlite:///${databasePath}`,
+  NO_AUTH: "true",
+  NO_AUTH_TOKEN: "current_user",
+};
 const isCI = !!process.env.CI;
-const backendPort = parseInt(
-  process.env.PORT || process.env.BACKEND_PORT || "8000",
-);
-const frontendPort = parseInt(
-  process.env.PORT || process.env.FRONTEND_PORT || "5173",
-);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   testDir: "./e2e",
+  /* Run tests in files in parallel */
+  fullyParallel: true,
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -45,7 +50,7 @@ export default defineConfig({
     trace: "on-first-retry",
 
     /* Only on CI systems run the tests headless */
-    headless: isCI,
+    headless: true,
   },
 
   /* Configure projects for major browsers */
@@ -54,6 +59,7 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 900 },
       },
     },
     // {
@@ -104,20 +110,23 @@ export default defineConfig({
   /* Run your local dev servers before starting the tests */
   webServer: isCI
     ? {
-        command: `npm run backend:start`,
+        command: `npm run db:seed:e2e-data && npm run backend:start`,
         port: backendPort,
         reuseExistingServer: false,
+        env: environment,
       }
     : [
         {
-          command: `npm run backend:dev`,
+          command: `npm run db:seed:e2e-data && npm run backend:dev`,
           port: backendPort,
           reuseExistingServer: true,
+          env: environment,
         },
         {
           command: `npm run frontend:dev`,
           port: frontendPort,
           reuseExistingServer: true,
+          env: environment,
         },
       ],
 });

@@ -59,11 +59,11 @@ function color(status: boolean) {
           <div class="grid gap-6 sm:grid-cols-2 mt-3">
             <UCard>
               <div class="flex flex-col items-center gap-4">
-                <UIcon name="i-lucide-check-circle" :class="`size-16 text-${color(apiOk)}`" />
+                <UIcon name="i-lucide-server" :class="`size-16 text-${color(apiOk)}`" />
 
                 <div class="text-center">
                   <UBadge :color="color(apiOk)" variant="subtle" size="lg">
-                    {{ loading ? t('.loading') : apiOk ? t('.up') : t('.down') }}
+                    API: {{ loading ? t('.loading') : apiOk ? t('.up') : t('.down') }}
                   </UBadge>
                 </div>
               </div>
@@ -75,7 +75,7 @@ function color(status: boolean) {
 
                 <div class="text-center">
                   <UBadge :color="color(dbOk)" variant="subtle" size="lg">
-                    {{ loading ? t('.loading') : dbOk ? t('.up') : t('.down') }}
+                    DB: {{ loading ? t('.loading') : dbOk ? t('.up') : t('.down') }}
                   </UBadge>
                 </div>
               </div>
