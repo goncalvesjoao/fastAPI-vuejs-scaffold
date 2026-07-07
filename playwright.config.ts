@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const backendPort = 8010;
 const frontendPort = 5183;
-const databasePath = path.resolve("test-results/database.db");
+const databasePath = path.resolve("test-results/test.db");
 const environment = {
   BACKEND_PORT: String(backendPort),
   FRONTEND_PORT: String(frontendPort),

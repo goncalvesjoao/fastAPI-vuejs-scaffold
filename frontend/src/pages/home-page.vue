@@ -51,36 +51,38 @@ async function checkAuthentication() {
       <ErrorPanel v-if="authError" :error="authError" :noButton="true" />
 
       <ContainerPanel v-else>
-        <LoadingSpinner :loading="authStatus === 'unconfirmed'" />
+        <div class="w-fit mx-auto flex flex-col flex-1 items-center justify-center gap-12">
+          <LoadingSpinner :loading="authStatus === 'unconfirmed'" />
 
-        <section>
-          <p class="text-primary text-xs font-semibold tracking-widest">
-            {{ t('.eyebrow') }}
-          </p>
+          <section>
+            <p class="text-primary text-xs font-semibold tracking-widest">
+              {{ t('.eyebrow') }}
+            </p>
 
-          <h2
-            class="mt-4 tracking-tighter text-4xl sm:text-5xl font-bold text-highlighted text-balance"
-          >
-            {{ t('.title') }}
-          </h2>
+            <h2
+              class="mt-4 tracking-tighter text-4xl sm:text-5xl font-bold text-highlighted text-balance"
+            >
+              {{ t('.title') }}
+            </h2>
 
-          <p class="mt-4 text-lg text-muted text-balance">
-            {{
-              authStatus === 'authenticated'
-                ? t('.description.authenticated')
-                : t('.description.unauthenticated')
-            }}
-          </p>
+            <p class="mt-4 text-lg text-muted text-balance">
+              {{
+                authStatus === 'authenticated'
+                  ? t('.description.authenticated')
+                  : t('.description.unauthenticated')
+              }}
+            </p>
 
-          <UButton
-            :to="{ name: 'new-article' }"
-            size="xl"
-            icon="i-lucide-plus"
-            class="mt-4 px-6 justify-center"
-          >
-            {{ primaryAction.label }}
-          </UButton>
-        </section>
+            <UButton
+              :to="{ name: 'new-article' }"
+              size="xl"
+              icon="i-lucide-plus"
+              class="mt-4 px-6 justify-center"
+            >
+              {{ primaryAction.label }}
+            </UButton>
+          </section>
+        </div>
       </ContainerPanel>
     </template>
   </DashboardPanel>
