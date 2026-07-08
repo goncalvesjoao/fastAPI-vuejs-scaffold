@@ -48,7 +48,15 @@ describe('pages/articles/edit-page', () => {
       data: articlePublicFactory({ id: 777 }),
     })
     updateArticleApiArticlesIdPatch.mockRejectedValueOnce(
-      unprocessableContentResponseFactory({ content: ['Content is required'] }),
+      unprocessableContentResponseFactory([
+        {
+          type: 'string_too_short',
+          loc: ['body', 'content'],
+          msg: '[backend] content is too short',
+          input: '',
+          ctx: { min_length: 3 },
+        },
+      ]),
     )
 
     const router = createRouter({ history: createMemoryHistory(), routes })
@@ -72,7 +80,7 @@ describe('pages/articles/edit-page', () => {
       777,
       expect.objectContaining({ content: '' }),
     )
-    expect(wrapper.text()).toContain('Content is required')
+    expect(wrapper.text()).toContain('Please enter at least 3 character(s)')
   })
 
   it('shows the unexpected error after submitting and receiving a 503 response', async () => {
