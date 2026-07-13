@@ -141,3 +141,11 @@ def test_explicit_no_auth_false_requires_clerk():
     )
 
     assert config.auth_disabled is False
+
+
+def test_request_hardening_defaults_are_enabled():
+    config = Settings(environment="test")
+
+    assert config.request_body_max_bytes == 512 * 1024
+    assert config.rate_limit_requests == 600
+    assert config.rate_limit_window_seconds == 60

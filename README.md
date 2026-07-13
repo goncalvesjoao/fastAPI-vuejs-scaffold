@@ -116,10 +116,10 @@ npm run test:e2e
 npm run test:e2e -- --project=chromium
 # Runs the tests of a specific file
 npm run test:e2e -- tests/example.spec.ts
-# Runs the tests in debug mode
-npm run test:e2e -- --debug
 # Runs the tests with the Playwright UI
-npm run test:e2e -- --ui
+npm run test:e2e:ui -- tests/example.spec.ts
+# Runs the tests in debug mode
+npm run test:e2e:debug -- tests/example.spec.ts
 ```
 
 ## Continuous Integration
@@ -130,19 +130,25 @@ npm run test:e2e -- --ui
 
 ## Continuous Deployment
 
-Render.com is configured to automatically deploy the `main` branch, uppon new commits. The deployment process runs the `setup` and `build` scripts, then starts the backend service with the `start` script.
+Render.com is configured to automatically deploy the `main` branch, upon new commits. The deployment process runs the `setup` and `build` scripts, then starts the backend service with the `start` script.
 
 ### Provisioning
 
-1. Create a project on Render.com.
-2. Create a New Web Service, selecting the GitHub repository
-3. Then set the settings as
-
-- Language: `Node`
-- Branch: `main`
-- Region: `Singapore` (or closest to Tokyo)
-- Root Direction: empty
-- Build Command: `npm run setup && npm run build`
-- Start Command: `npm run start`
-- Instance Type: `Free` (or `Starter` if you need more resources)
-- Environment Variables: copy the variables from `.env`, except `CLERK_AUTHORIZED_PARTIES` which needs to be the same as Render.com project URL (e.g. `https://<your-project-name>.onrender.com`)
+1. Optional: create Sentry projects first.
+   - Use `SENTRY_DSN` for the backend project.
+   - Use `VITE_SENTRY_DSN` for the frontend project.
+   - To upload frontend source maps, also set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT`.
+2. Create a project on Render.com.
+3. Create a New Web Service, selecting the GitHub repository.
+4. Then set the settings as:
+   - Language: `Node`
+   - Branch: `main`
+   - Region: `Singapore` (or closest to your users)
+   - Root Directory: empty
+   - Build Command: `npm run setup && npm run build`
+   - Start Command: `npm run start`
+   - Instance Type: `Free` (or `Starter` if you need more resources)
+5. Set Render environment variables:
+   - Copy the variables from `.env`.
+   - Set `CLERK_AUTHORIZED_PARTIES` to the Render project URL (for example, `https://<your-project-name>.onrender.com`).
+   - Set `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` if you want a simple password gate for the deployed SPA/static files.

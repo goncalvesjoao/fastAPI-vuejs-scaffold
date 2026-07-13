@@ -19,10 +19,10 @@ export enum ArticleStateEnum {
 }
 
 const STATE_LABEL_KEYS: Record<ArticleStateEnum, string> = {
-  [ArticleStateEnum.Idle]: 'articles.states.idle',
-  [ArticleStateEnum.Loading]: 'articles.states.loading',
-  [ArticleStateEnum.Updating]: 'articles.states.updating',
-  [ArticleStateEnum.Deleting]: 'articles.states.deleting',
+  [ArticleStateEnum.Idle]: 'entities.article-state-enum.idle',
+  [ArticleStateEnum.Loading]: 'entities.article-state-enum.loading',
+  [ArticleStateEnum.Updating]: 'entities.article-state-enum.updating',
+  [ArticleStateEnum.Deleting]: 'entities.article-state-enum.deleting',
 }
 
 const STATE_ICONS: Record<ArticleStateEnum, string> = {

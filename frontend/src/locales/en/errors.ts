@@ -1,23 +1,25 @@
 export const errors = {
+  unexpectedState: 'Unexpected state',
   unexpectedError: 'Unexpected error',
+  unknownError: 'Unknown error',
   unknownCause: 'Unknown cause',
-  supportNotified: 'Support has been notified. Please try again later',
+  supportNotified: "We've been notified. Please try again in a few moments.",
   ApiError: {
-    defaultMessage: 'An unexpected error occurred while processing the request',
+    defaultMessage: 'Something went wrong while processing the request.',
   },
   UnauthorizedApiError: {
-    defaultMessage: 'User not logged in or session expired',
+    defaultMessage: 'Sign in again to continue.',
   },
   NotFoundApiError: {
-    defaultMessage: 'The requested resource could not be found',
+    defaultMessage: 'The requested item could not be found.',
   },
   UnprocessableContentApiError: {
-    defaultMessage: 'Invalid or missing fields',
+    defaultMessage: 'Some fields are missing or need a touch-up.',
   },
   InternalServerErrorApiError: {
-    defaultMessage: 'An unexpected error occurred on the server',
+    defaultMessage: 'The server hit an unexpected error.',
   },
   BadGatewayApiError: {
-    defaultMessage: 'Server is currently unavailable',
+    defaultMessage: 'The server is currently unavailable.',
   },
 }

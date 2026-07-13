@@ -40,6 +40,12 @@ describe('useI18n', () => {
     expect(t('.submitLabel')).toBe('Create Article')
   })
 
+  it('prefixes relative keys with explicit source-relative paths', () => {
+    const t = createTranslator('pages/health-page')
+
+    expect(t('.up')).toBe('Up')
+  })
+
   it('keeps absolute keys unchanged', () => {
     const t = createTranslator('/src/pages/articles/new-page.vue')
 

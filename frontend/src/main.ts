@@ -7,6 +7,7 @@ import { clerkPlugin, updateClerkOptions } from '@clerk/vue'
 import { enUS, jaJP } from '@clerk/localizations'
 import { addCollection } from '@iconify/vue'
 import { icons } from '@iconify-json/lucide'
+import * as Sentry from '@sentry/vue'
 
 import App from '@/App.vue'
 import { currentLocale, i18n } from '@/i18n'
@@ -14,6 +15,13 @@ import router from '@/router'
 import { settings } from '@/settings'
 
 const app = createApp(App)
+
+if (settings.sentryEnabled) {
+  Sentry.init({
+    app,
+    dsn: settings.sentryDsn,
+  })
+}
 
 addCollection(icons)
 

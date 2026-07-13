@@ -11,7 +11,7 @@ const originalT = i18n.global.t.bind(i18n.global)
 
 // Override the t function to check for missing translations
 i18n.global.t = function (...args: unknown[]) {
-  const result = originalT(...args)
+  const result = Reflect.apply(originalT, i18n.global, args)
 
   // If the result is the same as the key (untranslated), throw an error
   // This happens when a translation key is not found

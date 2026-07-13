@@ -15,18 +15,6 @@ import NewPage from '@/pages/articles/new-page.vue'
 
 const { createArticleApiArticlesPost } = openApiMocks
 
-function validationResponse(
-  detail: Array<{
-    type: string
-    loc: Array<string | number>
-    msg: string
-    input: unknown
-    ctx: Record<string, unknown>
-  }>,
-) {
-  return { status: 422, error: { detail } }
-}
-
 describe('pages/articles/new-page', () => {
   beforeEach(() => {
     resetOpenApiMocks()
@@ -81,5 +69,29 @@ describe('pages/articles/new-page', () => {
     expect(wrapper.text()).toContain(
       'Please enter at least 3 character(s), [backend] title is invalid',
     )
+  })
+
+  it('shows the unexpected error after submitting and receiving a 503 response', async () => {
+    setLocale('ja')
+    createArticleApiArticlesPost.mockRejectedValueOnce({ status: 503 })
+
+    const router = createRouter({ history: createMemoryHistory(), routes })
+    await router.push('/articles/new')
+    await router.isReady()
+
+    const wrapper = mount(NewPage, {
+      global: { plugins: [createPinia(), router, i18n] },
+    })
+
+    await flushPromises()
+    await nextTick()
+
+    await wrapper.find('form').trigger('submit.prevent')
+
+    await flushPromises()
+    await nextTick()
+
+    expect(wrapper.text()).toContain('記事の作成に失敗しました')
+    expect(wrapper.text()).toContain('予期しないエラー')
   })
 })

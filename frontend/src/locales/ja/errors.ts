@@ -1,22 +1,25 @@
 export const errors = {
+  unexpectedState: '予期しない状態',
+  unexpectedError: '予期しないエラー',
+  unknownError: '不明なエラー',
   unknownCause: '原因不明です',
-  supportNotified: 'サポートに通知しました。しばらくしてからもう一度お試しください',
+  supportNotified: '問題を検知しました。しばらくしてからもう一度お試しください。',
   ApiError: {
-    defaultMessage: 'リクエストの処理中に予期しないエラーが発生しました',
+    defaultMessage: 'リクエストの処理中に問題が発生しました。',
   },
   UnauthorizedApiError: {
-    defaultMessage: 'ログインしていないか、セッションの有効期限が切れています',
+    defaultMessage: '続行するには、もう一度サインインしてください。',
   },
   NotFoundApiError: {
-    defaultMessage: '指定されたリソースが見つかりません',
+    defaultMessage: 'リクエストされた項目が見つかりませんでした。',
   },
   UnprocessableContentApiError: {
-    defaultMessage: '入力されていない項目または無効な項目があります',
+    defaultMessage: '未入力、または見直しが必要な項目があります。',
   },
   InternalServerErrorApiError: {
-    defaultMessage: 'サーバーで予期しないエラーが発生しました',
+    defaultMessage: 'サーバーで予期しないエラーが発生しました。',
   },
   BadGatewayApiError: {
-    defaultMessage: '現在サーバーを利用できません',
+    defaultMessage: '現在サーバーを利用できません。',
   },
 }

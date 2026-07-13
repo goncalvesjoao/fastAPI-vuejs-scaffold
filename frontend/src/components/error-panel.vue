@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { useI18n } from '@/composables'
+import { useErrorReporter, useI18n } from '@/composables'
 import { computed } from 'vue'
-import { settings } from '@/settings'
 
 const props = defineProps<{
   error?: Error
@@ -13,27 +12,17 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n(import.meta.url)
+const { errorDetails } = useErrorReporter()
 
-const icon = computed(() => props.icon ?? (props.error ? 'i-lucide-triangle-alert' : undefined))
-
-const errorColor = computed(() => (props.error ? 'error' : 'primary'))
-
+const details = errorDetails(props.error)
+const icon = computed(() => props.icon ?? details.icon)
+const errorColor = computed(() => (props.error ? details.color : 'primary'))
 const title = computed(() => props.title ?? t('errors.unexpectedError'))
-
 const eyebrow = computed(
   () =>
     props.eyebrow ?? (props.error ? (props.error?.message ?? t('errors.unknownError')) : undefined),
 )
-
-const defaultDescription = computed(() => {
-  return settings.devMode
-    ? `🚧 ${props.error?.cause || t('errors.unknownCause')} 🚧`
-    : t('errors.supportNotified')
-})
-
-const description = computed(() =>
-  (props.description ?? props.error) ? (props.description ?? defaultDescription) : '',
-)
+const description = computed(() => props.description ?? details.description)
 </script>
 
 <template>

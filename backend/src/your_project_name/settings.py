@@ -13,6 +13,9 @@ DEFAULT_PLATFORM_PORT: int | None = None
 DEFAULT_DATABASE_URL = "sqlite+libsql:///data/app.db"
 DEFAULT_DATABASE_AUTH_TOKEN: str | None = None
 LOCAL_DATABASE_DRIVERS = {"sqlite", "sqlite+libsql"}
+DEFAULT_REQUEST_BODY_MAX_BYTES = 512 * 1024
+DEFAULT_RATE_LIMIT_REQUESTS = 600
+DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 60
 
 
 def normalize_database_url(value: str | None) -> str:
@@ -65,6 +68,10 @@ class Settings(BaseSettings):
     clerk_authorized_parties: str = ""
     basic_auth_username: str | None = None
     basic_auth_password: str | None = None
+    request_body_max_bytes: int = DEFAULT_REQUEST_BODY_MAX_BYTES
+    rate_limit_requests: int = DEFAULT_RATE_LIMIT_REQUESTS
+    rate_limit_window_seconds: int = DEFAULT_RATE_LIMIT_WINDOW_SECONDS
+    sentry_dsn: str | None = None
 
     # TODO: make the app raise an error if if self.auth_disabled is True and self.auth_issuer is empty
 

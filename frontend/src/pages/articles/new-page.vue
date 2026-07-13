@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToast } from '@nuxt/ui/composables'
 import { useArticlesStore } from '@/stores'
 import { ArticleNatureEnum } from '@/entities'
 import {

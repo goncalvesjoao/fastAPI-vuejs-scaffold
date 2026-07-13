@@ -9,6 +9,7 @@ This template should help get you started developing with Vue 3 in Vite.
 - **Framework:** Vue 3
 - **Authentication UI/session:** Clerk Vue SDK
 - **UI framework:** NuxtUI with TailwindCSS
+- **Monitoring:** Optional Sentry Vue SDK
 
 ### Quality and Testing
 
@@ -49,6 +50,19 @@ npm run build
 ```bash
 npm run test:unit
 ```
+
+To debug a specific test, add `.only` to the test definition or add
+`debugger` statements, then run:
+
+```bash
+npm run test:unit -- --inspect-brk --no-file-parallelism
+```
+
+### Sentry
+
+Set `VITE_SENTRY_DSN` to enable browser error reporting. To upload source maps
+during production builds, also set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and
+`SENTRY_PROJECT`.
 
 ### Lint with [ESLint](https://eslint.org/)
 

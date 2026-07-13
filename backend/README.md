@@ -9,6 +9,7 @@
 - **Persistence:** SQLModel on SQLite-compatible storage
 - **Production database:** Turso/libSQL
 - **Configuration:** pydantic-settings
+- **Monitoring:** Optional Sentry SDK
 - **HTTP/JWT support:** httpx plus Clerk token/JWKS verification
 
 ### Quality and Testing
@@ -60,6 +61,24 @@ DATABASE_AUTH_TOKEN=your-database-token
 Leave `DATABASE_AUTH_TOKEN` unset or empty when the configured database does
 not require auth.
 
+### Request Guards
+
+The backend includes two small API guards:
+
+- `REQUEST_BODY_MAX_BYTES` limits `POST`, `PUT`, and `PATCH` request bodies.
+- `RATE_LIMIT_REQUESTS` and `RATE_LIMIT_WINDOW_SECONDS` rate-limit `/api/*`
+  requests in-process.
+
+Set any of those values to `0` to disable the corresponding guard.
+
+When `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` are both set, basic auth
+protects only static frontend routes. API routes remain protected by Clerk.
+
+### Sentry
+
+Set `SENTRY_DSN` to initialize the Python Sentry SDK at startup. Leave it empty
+to disable error monitoring.
+
 ### Lint
 
 ```bash
@@ -83,7 +102,7 @@ not require auth.
 The following command generates support files, like saving the OpenAPI schema to the `frontend` app, which is used to generate TypeScript types for the frontend.
 
 ```bash
-.venv/bin/python scripts/generate_support_files.py
+.venv/bin/python scripts/generate_openapi.py
 ```
 
 ### Test

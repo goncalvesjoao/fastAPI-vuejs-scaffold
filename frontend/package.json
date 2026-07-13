@@ -8,12 +8,16 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "generate:openapi": "node scripts/generate-openapi.js",
     "preview": "vite preview",
+    "check": "npm run lint && npm run type-check",
     "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "lint": "run-s \"lint:*\"",
-    "lint:oxlint": "oxlint . --fix",
-    "lint:eslint": "eslint . --fix --cache",
+    "lint": "run-s lint:oxlint lint:eslint",
+    "lint:oxlint": "oxlint .",
+    "lint:eslint": "eslint . --cache",
+    "lint:fix": "run-s lint:fix:oxlint lint:fix:eslint",
+    "lint:fix:oxlint": "oxlint . --fix",
+    "lint:fix:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
@@ -21,6 +25,7 @@
     "@clerk/vue": "^2.4.6",
     "@iconify-json/lucide": "^1.2.114",
     "@nuxt/ui": "^4.9.0",
+    "@sentry/vue": "^10.65.0",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.3.1",
     "vue": "^3.5.38",
@@ -29,6 +34,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^5.4.0",
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^28.0.3",
     "@types/node": "^24.13.2",

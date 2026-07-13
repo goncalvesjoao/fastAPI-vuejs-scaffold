@@ -4,7 +4,7 @@ import { ArticleNatureEnum } from '@/entities'
 
 // Registry to map enum objects to their names for i18n translation
 const ENUM_REGISTRY = new Map<Record<string, string>, string>([
-  [ArticleNatureEnum, 'entities.article.enums.ArticleNatureEnum'],
+  [ArticleNatureEnum, 'entities.article-nature-enum'],
 ])
 
 export function useEnums() {

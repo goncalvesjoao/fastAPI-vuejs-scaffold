@@ -12,6 +12,8 @@ describe('i18n', () => {
 
     expect(currentLocale()).toBe('ja')
     expect(translate('pages.articles.new-page.submitLabel')).toBe('作成')
+    expect(translate('errors.unexpectedError')).toBe('予期しないエラー')
+    expect(translate('errors.unknownError')).toBe('不明なエラー')
     expect(document.documentElement.lang).toBe('ja')
   })
 
